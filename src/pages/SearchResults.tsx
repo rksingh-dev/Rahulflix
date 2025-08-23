@@ -36,7 +36,7 @@ const Message = styled.div`
 const SearchResults: React.FC = () => {
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q') || '';
-  const [results, setResults] = useState<Movie[]>([]);
+  const [results, setResults] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -45,9 +45,15 @@ const SearchResults: React.FC = () => {
     setLoading(true);
     setError(null);
     setResults([]);
-    movieApi
-      .searchMovies(query)
-      .then((data) => setResults(data.results))
+    searchApi
+      .searchMulti(query)
+      .then((data) => {
+        // Filter out people and only keep movies and TV shows
+        const filteredResults = data.results.filter(item =>
+          isMovie(item) || isTVShow(item)
+        );
+        setResults(filteredResults);
+      })
       .catch(() => setError('Failed to fetch search results.'))
       .finally(() => setLoading(false));
   }, [query]);
