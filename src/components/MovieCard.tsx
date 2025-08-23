@@ -178,35 +178,42 @@ const MovieCard: React.FC<MovieCardProps> = ({
       whileHover={{ scale: 1.05 }}
       transition={{ duration: 0.3 }}
     >
-      <PosterImage 
-        src={getPosterUrl(movie.poster_path)} 
-        alt={movie.title}
+      <PosterImage
+        src={getPosterUrl(posterPath)}
+        alt={title}
         loading="lazy"
       />
-      
+
       <HoverOverlay
         initial={{ opacity: 0 }}
         animate={{ opacity: isHovered ? 1 : 0 }}
         transition={{ duration: 0.3 }}
       >
         <TopSection>
-          <ActionButton onClick={handleAddToList}>
-            {isInList ? <FaCheck size={12} /> : <FaPlus size={12} />}
-          </ActionButton>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <ActionButton style={{ background: isMovieItem ? 'rgba(255, 0, 0, 0.3)' : 'rgba(0, 100, 255, 0.3)' }}>
+              {isMovieItem ? <FaFilm size={10} /> : <FaTv size={10} />}
+            </ActionButton>
+            <ActionButton onClick={handleAddToList}>
+              {isInList ? <FaCheck size={12} /> : <FaPlus size={12} />}
+            </ActionButton>
+          </div>
         </TopSection>
 
         <BottomSection>
-          <Title>{movie.title}</Title>
-          
+          <Title>{title}</Title>
+
           <MetaInfo>
             <Rating>★ {rating}</Rating>
             <span>•</span>
             <span>{year}</span>
+            <span>•</span>
+            <span>{isMovieItem ? 'Movie' : 'TV Show'}</span>
           </MetaInfo>
 
-          <PlayButton to={`/watch/${movie.id}`}>
+          <PlayButton to={isMovieItem ? `/watch/${mediaItem.id}` : `/tv/${mediaItem.id}`}>
             <FaPlay size={12} />
-            Play
+            {isMovieItem ? 'Play' : 'Watch'}
           </PlayButton>
         </BottomSection>
       </HoverOverlay>
