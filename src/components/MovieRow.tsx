@@ -94,17 +94,27 @@ const MovieCardWrapper = styled.div`
 
 interface MovieRowProps {
   title: string;
-  movies: Movie[];
-  onAddToList?: (movie: Movie) => void;
+  movies?: Movie[];
+  tvShows?: TVShow[];
+  mediaItems?: MediaItem[];
+  onAddToList?: (item: MediaItem) => void;
   watchlist?: string[];
 }
 
-const MovieRow: React.FC<MovieRowProps> = ({ 
-  title, 
-  movies, 
-  onAddToList, 
-  watchlist = [] 
+const MovieRow: React.FC<MovieRowProps> = ({
+  title,
+  movies,
+  tvShows,
+  mediaItems,
+  onAddToList,
+  watchlist = []
 }) => {
+  // Determine which items to display
+  const items = mediaItems || movies || tvShows || [];
+
+  if (!items || items.length === 0) {
+    return null;
+  }
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
