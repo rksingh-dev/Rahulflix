@@ -37,6 +37,10 @@ const Home: React.FC = () => {
   const [popularMovies, setPopularMovies] = useState<Movie[]>([]);
   const [topRatedMovies, setTopRatedMovies] = useState<Movie[]>([]);
   const [upcomingMovies, setUpcomingMovies] = useState<Movie[]>([]);
+  const [trendingTVShows, setTrendingTVShows] = useState<TVShow[]>([]);
+  const [popularTVShows, setPopularTVShows] = useState<TVShow[]>([]);
+  const [topRatedTVShows, setTopRatedTVShows] = useState<TVShow[]>([]);
+  const [airingTodayTVShows, setAiringTodayTVShows] = useState<TVShow[]>([]);
   const [watchlist, setWatchlist] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
