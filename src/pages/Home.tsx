@@ -86,12 +86,12 @@ const Home: React.FC = () => {
     fetchContent();
   }, []);
 
-  const handleAddToList = (movie: Movie) => {
+  const handleAddToList = (item: MediaItem) => {
     setWatchlist(prev => {
-      if (prev.includes(movie.id)) {
-        return prev.filter(id => id !== movie.id);
+      if (prev.includes(item.id)) {
+        return prev.filter(id => id !== item.id);
       } else {
-        return [...prev, movie.id];
+        return [...prev, item.id];
       }
     });
   };
