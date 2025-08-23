@@ -39,7 +39,7 @@ const BackButton = styled(Link)`
   font-size: 1.1rem;
   font-weight: 600;
   transition: color 0.3s ease;
-  z-index: 10;
+  z-index: 1001;
 
   &:hover {
     color: #e50914;
