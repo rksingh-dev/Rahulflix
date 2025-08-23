@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { FaPlay, FaInfoCircle } from 'react-icons/fa';
+import { FaPlay } from 'react-icons/fa';
 import { Movie } from '../types';
 import { getBackdropUrl } from '../services/api';
 
