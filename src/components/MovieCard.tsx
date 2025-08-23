@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { FaPlay, FaPlus, FaCheck, FaTv, FaFilm } from 'react-icons/fa';
 import { Movie, TVShow, MediaItem, isMovie, isTVShow } from '../types';
-import { getPosterUrl, getThumbnailUrl } from '../services/api';
+import { getPosterUrl } from '../services/api';
 
 const CardContainer = styled(motion.div)`
   position: relative;
