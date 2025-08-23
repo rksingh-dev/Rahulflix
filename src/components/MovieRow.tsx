@@ -117,10 +117,6 @@ const MovieRow: React.FC<MovieRowProps> = ({
   // Determine which items to display
   const items = React.useMemo(() => mediaItems || movies || tvShows || [], [mediaItems, movies, tvShows]);
 
-  if (!items || items.length === 0) {
-    return null;
-  }
-
   const checkScrollButtons = () => {
     if (scrollContainerRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
@@ -132,9 +128,9 @@ const MovieRow: React.FC<MovieRowProps> = ({
   const scroll = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
       const scrollAmount = scrollContainerRef.current.clientWidth * 0.8;
-      const newScrollLeft = scrollContainerRef.current.scrollLeft + 
+      const newScrollLeft = scrollContainerRef.current.scrollLeft +
         (direction === 'left' ? -scrollAmount : scrollAmount);
-      
+
       scrollContainerRef.current.scrollTo({
         left: newScrollLeft,
         behavior: 'smooth'
@@ -150,6 +146,10 @@ const MovieRow: React.FC<MovieRowProps> = ({
       return () => container.removeEventListener('scroll', checkScrollButtons);
     }
   }, [items]);
+
+  if (!items || items.length === 0) {
+    return null;
+  }
 
   return (
     <RowContainer>
