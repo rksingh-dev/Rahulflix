@@ -125,4 +125,32 @@ export interface ApiResponse<T> {
 export interface SearchParams {
   query: string;
   page?: number;
+  type?: 'movie' | 'tv' | 'multi';
 }
+
+// Union types for handling both movies and TV shows
+export type MediaItem = Movie | TVShow;
+export type MediaDetail = MovieDetail | TVShowDetail;
+
+// Content type enum
+export enum ContentType {
+  MOVIE = 'movie',
+  TV = 'tv'
+}
+
+// Helper type guards
+export const isMovie = (item: MediaItem): item is Movie => {
+  return 'title' in item && 'release_date' in item;
+};
+
+export const isTVShow = (item: MediaItem): item is TVShow => {
+  return 'name' in item && 'first_air_date' in item;
+};
+
+export const isMovieDetail = (item: MediaDetail): item is MovieDetail => {
+  return 'title' in item && 'runtime' in item;
+};
+
+export const isTVShowDetail = (item: MediaDetail): item is TVShowDetail => {
+  return 'name' in item && 'seasons' in item;
+};
