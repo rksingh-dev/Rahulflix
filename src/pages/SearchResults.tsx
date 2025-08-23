@@ -67,8 +67,8 @@ const SearchResults: React.FC = () => {
         <Message>No results found.</Message>
       )}
       <ResultsGrid as={motion.div} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-        {results.map((movie) => (
-          <MovieCard key={movie.id} movie={movie} />
+        {results.map((item) => (
+          <MovieCard key={`${isMovie(item) ? 'movie' : 'tv'}-${item.id}`} media={item} />
         ))}
       </ResultsGrid>
     </Container>
