@@ -4,8 +4,8 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import HeroBanner from '../components/HeroBanner';
 import MovieRow from '../components/MovieRow';
-import { Movie } from '../types';
-import { movieApi } from '../services/api';
+import { Movie, TVShow, MediaItem } from '../types';
+import { movieApi, tvApi } from '../services/api';
 
 const HomeContainer = styled.div`
   padding-top: 68px;
