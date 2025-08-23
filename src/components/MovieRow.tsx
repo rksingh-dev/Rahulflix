@@ -109,15 +109,17 @@ const MovieRow: React.FC<MovieRowProps> = ({
   onAddToList,
   watchlist = []
 }) => {
+  // React hooks must be called before any conditional logic
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
   // Determine which items to display
-  const items = mediaItems || movies || tvShows || [];
+  const items = React.useMemo(() => mediaItems || movies || tvShows || [], [mediaItems, movies, tvShows]);
 
   if (!items || items.length === 0) {
     return null;
   }
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const checkScrollButtons = () => {
     if (scrollContainerRef.current) {
