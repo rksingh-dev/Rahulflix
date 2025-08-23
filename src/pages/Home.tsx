@@ -8,7 +8,7 @@ import { Movie, TVShow, MediaItem } from '../types';
 import { movieApi, tvApi } from '../services/api';
 
 const HomeContainer = styled.div`
-  padding-top: 180px;
+  padding-top: 100px;
 `;
 
 const LoadingContainer = styled.div`
