@@ -190,9 +190,6 @@ const MoviePlayer: React.FC = () => {
     );
   }
 
-  const year = new Date(movie.release_date).getFullYear();
-  const rating = movie.vote_average.toFixed(1);
-
   return (
     <PlayerContainer>
       <BackButton to="/">
