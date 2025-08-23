@@ -1,5 +1,14 @@
 import axios from 'axios';
-import { Movie, MovieDetail, ApiResponse } from '../types';
+import {
+  Movie,
+  MovieDetail,
+  TVShow,
+  TVShowDetail,
+  Season,
+  Episode,
+  ApiResponse,
+  MediaItem
+} from '../types';
 
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 const TMDB_API_KEY = '82272030a69422d31949379569825735'; // Your TMDB API key
