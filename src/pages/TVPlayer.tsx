@@ -212,6 +212,7 @@ const TVPlayer: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [streamUrl, setStreamUrl] = useState<string>('');
+  const [showEpisodeInfo, setShowEpisodeInfo] = useState(true);
 
   const seasonNum = parseInt(season || '1');
   const episodeNum = parseInt(episode || '1');
