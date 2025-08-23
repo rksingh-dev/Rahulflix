@@ -170,4 +170,28 @@ export const getMovieStreamUrl = (movieId: string): string => {
   return `https://111movies.com/movie/${movieId}`;
 };
 
+export const getTVShowStreamUrl = (tvId: string, season: number, episode: number): string => {
+  // Convert TMDB ID to IMDB ID format if needed
+  // For demo purposes, we'll use the TMDB ID directly
+  // In a real implementation, you'd need to map TMDB IDs to IMDB IDs
+  return `https://111movies.com/tv/${tvId}/${season}/${episode}`;
+};
+
+// Helper function to get stream URL based on content type
+export const getStreamUrl = (
+  id: string,
+  type: 'movie' | 'tv',
+  season?: number,
+  episode?: number
+): string => {
+  if (type === 'movie') {
+    return getMovieStreamUrl(id);
+  } else {
+    if (season === undefined || episode === undefined) {
+      throw new Error('Season and episode are required for TV shows');
+    }
+    return getTVShowStreamUrl(id, season, episode);
+  }
+};
+
 export default api;
