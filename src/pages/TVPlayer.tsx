@@ -267,6 +267,9 @@ const TVPlayer: React.FC = () => {
 
   // Auto-hide episode info after 2 seconds
   useEffect(() => {
+    // Show episode info when episode changes
+    setShowEpisodeInfo(true);
+
     const timer = setTimeout(() => {
       setShowEpisodeInfo(false);
     }, 2000);
