@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { movieApi } from '../services/api';
-import { Movie } from '../types';
+import { searchApi } from '../services/api';
+import { MediaItem, isMovie, isTVShow } from '../types';
 import MovieCard from '../components/MovieCard';
 
 const Container = styled.div`
