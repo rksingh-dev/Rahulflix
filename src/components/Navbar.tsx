@@ -211,7 +211,7 @@ const Navbar: React.FC = () => {
           <FaBell size={16} />
         </IconButton>
 
-        <UserAvatar>
+        <UserAvatar as="a" href="https://www.linkedin.com/in/rahul-kumar-singh-1a14401ba/" target="_blank" rel="noopener noreferrer">
           <FaUser size={16} />
         </UserAvatar>
       </RightSection>
