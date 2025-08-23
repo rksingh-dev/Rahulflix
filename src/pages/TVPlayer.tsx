@@ -265,6 +265,15 @@ const TVPlayer: React.FC = () => {
     fetchTVShowAndEpisode();
   }, [id, season, episode, seasonNum, episodeNum]);
 
+  // Auto-hide episode info after 2 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowEpisodeInfo(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [id, seasonNum, episodeNum]); // Reset timer when episode changes
+
   const handlePreviousEpisode = () => {
     if (episodeNum > 1) {
       navigate(`/tv/${id}/watch/${seasonNum}/${episodeNum - 1}`);
