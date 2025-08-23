@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { FaPlay, FaPlus, FaCheck } from 'react-icons/fa';
-import { Movie } from '../types';
-import { getPosterUrl, getThumbnailUrl } from '../services/api';
+import { FaPlay, FaPlus, FaCheck, FaTv, FaFilm } from 'react-icons/fa';
+import { Movie, TVShow, MediaItem, isMovie } from '../types';
+import { getPosterUrl } from '../services/api';
 
 const CardContainer = styled(motion.div)`
   position: relative;
@@ -119,40 +119,41 @@ const PlayButton = styled(Link)`
   }
 `;
 
-const GenreTags = styled.div`
-  display: flex;
-  gap: 0.25rem;
-  flex-wrap: wrap;
-`;
-
-const GenreTag = styled.span`
-  background: rgba(255, 255, 255, 0.2);
-  color: #fff;
-  padding: 2px 6px;
-  border-radius: 2px;
-  font-size: 0.7rem;
-`;
 
 interface MovieCardProps {
-  movie: Movie;
-  onAddToList?: (movie: Movie) => void;
+  movie?: Movie;
+  tvShow?: TVShow;
+  media?: MediaItem;
+  onAddToList?: (item: MediaItem) => void;
   isInList?: boolean;
 }
 
-const MovieCard: React.FC<MovieCardProps> = ({ 
-  movie, 
-  onAddToList, 
-  isInList = false 
+const MovieCard: React.FC<MovieCardProps> = ({
+  movie,
+  tvShow,
+  media,
+  onAddToList,
+  isInList = false
 }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const year = new Date(movie.release_date).getFullYear();
-  const rating = movie.vote_average.toFixed(1);
+
+  // Determine the media item to work with
+  const mediaItem = media || movie || tvShow;
+  if (!mediaItem) return null;
+
+  const isMovieItem = isMovie(mediaItem);
+
+  const title = isMovieItem ? mediaItem.title : mediaItem.name;
+  const releaseDate = isMovieItem ? mediaItem.release_date : mediaItem.first_air_date;
+  const year = releaseDate ? new Date(releaseDate).getFullYear() : '';
+  const rating = mediaItem.vote_average.toFixed(1);
+  const posterPath = mediaItem.poster_path;
 
   const handleAddToList = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (onAddToList) {
-      onAddToList(movie);
+      onAddToList(mediaItem);
     }
   };
 
@@ -163,35 +164,42 @@ const MovieCard: React.FC<MovieCardProps> = ({
       whileHover={{ scale: 1.05 }}
       transition={{ duration: 0.3 }}
     >
-      <PosterImage 
-        src={getPosterUrl(movie.poster_path)} 
-        alt={movie.title}
+      <PosterImage
+        src={getPosterUrl(posterPath)}
+        alt={title}
         loading="lazy"
       />
-      
+
       <HoverOverlay
         initial={{ opacity: 0 }}
         animate={{ opacity: isHovered ? 1 : 0 }}
         transition={{ duration: 0.3 }}
       >
         <TopSection>
-          <ActionButton onClick={handleAddToList}>
-            {isInList ? <FaCheck size={12} /> : <FaPlus size={12} />}
-          </ActionButton>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <ActionButton style={{ background: isMovieItem ? 'rgba(255, 0, 0, 0.3)' : 'rgba(0, 100, 255, 0.3)' }}>
+              {isMovieItem ? <FaFilm size={10} /> : <FaTv size={10} />}
+            </ActionButton>
+            <ActionButton onClick={handleAddToList}>
+              {isInList ? <FaCheck size={12} /> : <FaPlus size={12} />}
+            </ActionButton>
+          </div>
         </TopSection>
 
         <BottomSection>
-          <Title>{movie.title}</Title>
-          
+          <Title>{title}</Title>
+
           <MetaInfo>
             <Rating>★ {rating}</Rating>
             <span>•</span>
             <span>{year}</span>
+            <span>•</span>
+            <span>{isMovieItem ? 'Movie' : 'TV Show'}</span>
           </MetaInfo>
 
-          <PlayButton to={`/watch/${movie.id}`}>
+          <PlayButton to={isMovieItem ? `/watch/${mediaItem.id}` : `/tv/${mediaItem.id}`}>
             <FaPlay size={12} />
-            Play
+            {isMovieItem ? 'Play' : 'Watch'}
           </PlayButton>
         </BottomSection>
       </HoverOverlay>

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { movieApi } from '../services/api';
-import { Movie } from '../types';
+import { searchApi } from '../services/api';
+import { MediaItem, isMovie, isTVShow } from '../types';
 import MovieCard from '../components/MovieCard';
 
 const Container = styled.div`
@@ -36,7 +36,7 @@ const Message = styled.div`
 const SearchResults: React.FC = () => {
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q') || '';
-  const [results, setResults] = useState<Movie[]>([]);
+  const [results, setResults] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -45,9 +45,15 @@ const SearchResults: React.FC = () => {
     setLoading(true);
     setError(null);
     setResults([]);
-    movieApi
-      .searchMovies(query)
-      .then((data) => setResults(data.results))
+    searchApi
+      .searchMulti(query)
+      .then((data) => {
+        // Filter out people and only keep movies and TV shows
+        const filteredResults = data.results.filter(item =>
+          isMovie(item) || isTVShow(item)
+        );
+        setResults(filteredResults);
+      })
       .catch(() => setError('Failed to fetch search results.'))
       .finally(() => setLoading(false));
   }, [query]);
@@ -61,8 +67,8 @@ const SearchResults: React.FC = () => {
         <Message>No results found.</Message>
       )}
       <ResultsGrid as={motion.div} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-        {results.map((movie) => (
-          <MovieCard key={movie.id} movie={movie} />
+        {results.map((item) => (
+          <MovieCard key={`${isMovie(item) ? 'movie' : 'tv'}-${item.id}`} media={item} />
         ))}
       </ResultsGrid>
     </Container>

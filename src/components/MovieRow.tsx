@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-import { Movie } from '../types';
+import { Movie, TVShow, MediaItem } from '../types';
 import MovieCard from './MovieCard';
 
 const RowContainer = styled.div`
@@ -94,20 +94,28 @@ const MovieCardWrapper = styled.div`
 
 interface MovieRowProps {
   title: string;
-  movies: Movie[];
-  onAddToList?: (movie: Movie) => void;
+  movies?: Movie[];
+  tvShows?: TVShow[];
+  mediaItems?: MediaItem[];
+  onAddToList?: (item: MediaItem) => void;
   watchlist?: string[];
 }
 
-const MovieRow: React.FC<MovieRowProps> = ({ 
-  title, 
-  movies, 
-  onAddToList, 
-  watchlist = [] 
+const MovieRow: React.FC<MovieRowProps> = ({
+  title,
+  movies,
+  tvShows,
+  mediaItems,
+  onAddToList,
+  watchlist = []
 }) => {
+  // React hooks must be called before any conditional logic
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  // Determine which items to display
+  const items = React.useMemo(() => mediaItems || movies || tvShows || [], [mediaItems, movies, tvShows]);
 
   const checkScrollButtons = () => {
     if (scrollContainerRef.current) {
@@ -120,9 +128,9 @@ const MovieRow: React.FC<MovieRowProps> = ({
   const scroll = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
       const scrollAmount = scrollContainerRef.current.clientWidth * 0.8;
-      const newScrollLeft = scrollContainerRef.current.scrollLeft + 
+      const newScrollLeft = scrollContainerRef.current.scrollLeft +
         (direction === 'left' ? -scrollAmount : scrollAmount);
-      
+
       scrollContainerRef.current.scrollTo({
         left: newScrollLeft,
         behavior: 'smooth'
@@ -137,9 +145,9 @@ const MovieRow: React.FC<MovieRowProps> = ({
       container.addEventListener('scroll', checkScrollButtons);
       return () => container.removeEventListener('scroll', checkScrollButtons);
     }
-  }, [movies]);
+  }, [items]);
 
-  if (!movies || movies.length === 0) {
+  if (!items || items.length === 0) {
     return null;
   }
 
@@ -170,12 +178,12 @@ const MovieRow: React.FC<MovieRowProps> = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          {movies.map((movie) => (
-            <MovieCardWrapper key={movie.id}>
+          {items.map((item) => (
+            <MovieCardWrapper key={item.id}>
               <MovieCard
-                movie={movie}
+                media={item}
                 onAddToList={onAddToList}
-                isInList={watchlist.includes(movie.id)}
+                isInList={watchlist.includes(item.id)}
               />
             </MovieCardWrapper>
           ))}

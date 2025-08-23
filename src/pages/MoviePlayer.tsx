@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { FaArrowLeft, FaPlay, FaPause, FaVolumeUp, FaVolumeMute, FaExpand } from 'react-icons/fa';
+import { FaArrowLeft } from 'react-icons/fa';
 import { MovieDetail } from '../types';
 import { movieApi, getMovieStreamUrl } from '../services/api';
 
@@ -115,48 +115,6 @@ const RetryButton = styled.button`
   }
 `;
 
-const MovieInfo = styled.div`
-  position: absolute;
-  bottom: 2rem;
-  left: 2rem;
-  color: #fff;
-  z-index: 1000;
-  background: rgba(0, 0, 0, 0.8);
-  padding: 1rem;
-  border-radius: 8px;
-  max-width: 400px;
-`;
-
-const MovieTitle = styled.h1`
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin: 0 0 0.5rem 0;
-`;
-
-const MovieMeta = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  font-size: 0.9rem;
-  color: #b3b3b3;
-  margin-bottom: 0.5rem;
-`;
-
-const Rating = styled.span`
-  color: #46d369;
-  font-weight: 600;
-`;
-
-const MovieOverview = styled.p`
-  font-size: 0.9rem;
-  line-height: 1.4;
-  color: #e5e5e5;
-  margin: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-`;
 
 const MoviePlayer: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -231,9 +189,6 @@ const MoviePlayer: React.FC = () => {
       </PlayerContainer>
     );
   }
-
-  const year = new Date(movie.release_date).getFullYear();
-  const rating = movie.vote_average.toFixed(1);
 
   return (
     <PlayerContainer>

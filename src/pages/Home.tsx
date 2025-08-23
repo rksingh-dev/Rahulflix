@@ -4,11 +4,11 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import HeroBanner from '../components/HeroBanner';
 import MovieRow from '../components/MovieRow';
-import { Movie } from '../types';
-import { movieApi } from '../services/api';
+import { Movie, TVShow, MediaItem } from '../types';
+import { movieApi, tvApi } from '../services/api';
 
 const HomeContainer = styled.div`
-  padding-top: 68px;
+  padding-top: 80px;
 `;
 
 const LoadingContainer = styled.div`
@@ -37,6 +37,10 @@ const Home: React.FC = () => {
   const [popularMovies, setPopularMovies] = useState<Movie[]>([]);
   const [topRatedMovies, setTopRatedMovies] = useState<Movie[]>([]);
   const [upcomingMovies, setUpcomingMovies] = useState<Movie[]>([]);
+  const [trendingTVShows, setTrendingTVShows] = useState<TVShow[]>([]);
+  const [popularTVShows, setPopularTVShows] = useState<TVShow[]>([]);
+  const [topRatedTVShows, setTopRatedTVShows] = useState<TVShow[]>([]);
+  const [airingTodayTVShows, setAiringTodayTVShows] = useState<TVShow[]>([]);
   const [watchlist, setWatchlist] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -44,39 +48,50 @@ const Home: React.FC = () => {
   const category = searchParams.get('category');
 
   useEffect(() => {
-    const fetchMovies = async () => {
+    const fetchContent = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        const [trending, popular, topRated, upcoming] = await Promise.all([
+        const [
+          trendingMovies, popularMovies, topRatedMovies, upcomingMovies,
+          trendingTV, popularTV, topRatedTV, airingTodayTV
+        ] = await Promise.all([
           movieApi.getTrending(),
           movieApi.getPopular(),
           movieApi.getTopRated(),
           movieApi.getUpcoming(),
+          tvApi.getTrending(),
+          tvApi.getPopular(),
+          tvApi.getTopRated(),
+          tvApi.getAiringToday(),
         ]);
 
-        setTrendingMovies(trending);
-        setPopularMovies(popular);
-        setTopRatedMovies(topRated);
-        setUpcomingMovies(upcoming);
+        setTrendingMovies(trendingMovies);
+        setPopularMovies(popularMovies);
+        setTopRatedMovies(topRatedMovies);
+        setUpcomingMovies(upcomingMovies);
+        setTrendingTVShows(trendingTV);
+        setPopularTVShows(popularTV);
+        setTopRatedTVShows(topRatedTV);
+        setAiringTodayTVShows(airingTodayTV);
       } catch (err) {
-        setError('Failed to load movies. Please try again later.');
-        console.error('Error fetching movies:', err);
+        setError('Failed to load content. Please try again later.');
+        console.error('Error fetching content:', err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchMovies();
+    fetchContent();
   }, []);
 
-  const handleAddToList = (movie: Movie) => {
+  const handleAddToList = (item: MediaItem) => {
     setWatchlist(prev => {
-      if (prev.includes(movie.id)) {
-        return prev.filter(id => id !== movie.id);
+      if (prev.includes(item.id)) {
+        return prev.filter(id => id !== item.id);
       } else {
-        return [...prev, movie.id];
+        return [...prev, item.id];
       }
     });
   };
@@ -150,30 +165,54 @@ const Home: React.FC = () => {
                 watchlist={watchlist}
               />
             </div>
-            <div id="popular">
+            <div id="movies">
               <MovieRow
-                title="Popular on RahulGram"
+                title="Popular Movies"
                 movies={popularMovies.slice(0, 6)}
                 onAddToList={handleAddToList}
                 watchlist={watchlist}
               />
             </div>
-            <div id="top-rated">
+            <div id="tv-shows">
               <MovieRow
-                title="Top Rated"
+                title="Popular TV Shows"
+                tvShows={popularTVShows.slice(0, 6)}
+                onAddToList={handleAddToList}
+                watchlist={watchlist}
+              />
+            </div>
+            <div id="popular">
+              <MovieRow
+                title="Top Rated Movies"
                 movies={topRatedMovies.slice(0, 6)}
                 onAddToList={handleAddToList}
                 watchlist={watchlist}
               />
             </div>
-            <div id="upcoming">
-              <MovieRow
-                title="Coming Soon"
-                movies={upcomingMovies.slice(0, 6)}
-                onAddToList={handleAddToList}
-                watchlist={watchlist}
-              />
-            </div>
+            <MovieRow
+              title="Top Rated TV Shows"
+              tvShows={topRatedTVShows.slice(0, 6)}
+              onAddToList={handleAddToList}
+              watchlist={watchlist}
+            />
+            <MovieRow
+              title="Trending TV Shows"
+              tvShows={trendingTVShows.slice(0, 6)}
+              onAddToList={handleAddToList}
+              watchlist={watchlist}
+            />
+            <MovieRow
+              title="Airing Today"
+              tvShows={airingTodayTVShows.slice(0, 6)}
+              onAddToList={handleAddToList}
+              watchlist={watchlist}
+            />
+            <MovieRow
+              title="Coming Soon"
+              movies={upcomingMovies.slice(0, 6)}
+              onAddToList={handleAddToList}
+              watchlist={watchlist}
+            />
           </>
         )}
 
