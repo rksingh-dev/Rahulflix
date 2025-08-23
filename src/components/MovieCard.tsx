@@ -142,7 +142,6 @@ const MovieCard: React.FC<MovieCardProps> = ({
   if (!mediaItem) return null;
 
   const isMovieItem = isMovie(mediaItem);
-  const isTVItem = isTVShow(mediaItem);
 
   const title = isMovieItem ? mediaItem.title : mediaItem.name;
   const releaseDate = isMovieItem ? mediaItem.release_date : mediaItem.first_air_date;
