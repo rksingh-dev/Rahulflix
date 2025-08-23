@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { FaPlay, FaPlus, FaCheck, FaArrowLeft, FaTv } from 'react-icons/fa';
-import { TVShowDetail as TVShowDetailType, TVShow, Season, Episode } from '../types';
+import { TVShowDetail as TVShowDetailType, TVShow } from '../types';
 import { tvApi, getBackdropUrl, getPosterUrl } from '../services/api';
 import MovieRow from '../components/MovieRow';
 
