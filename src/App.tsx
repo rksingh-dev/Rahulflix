@@ -5,6 +5,8 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import MovieDetail from './pages/MovieDetail';
 import MoviePlayer from './pages/MoviePlayer';
+import TVDetail from './pages/TVDetail';
+import TVPlayer from './pages/TVPlayer';
 import SearchResults from './pages/SearchResults';
 import { GlobalStyles } from './styles/GlobalStyles';
 
