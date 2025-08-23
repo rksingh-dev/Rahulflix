@@ -384,35 +384,37 @@ const TVPlayer: React.FC = () => {
         />
       </VideoContainer>
 
-      <EpisodeInfo>
-        <ShowTitle>
-          <FaTv size={16} />
-          {tvShow.name}
-        </ShowTitle>
-        <EpisodeTitle>
-          S{seasonNum}E{episodeNum}: {episodeDetail.name}
-        </EpisodeTitle>
-        
-        <EpisodeMeta>
-          <Rating>★ {rating}</Rating>
-          {episodeDetail.air_date && (
-            <>
-              <span>•</span>
-              <span>{new Date(episodeDetail.air_date).getFullYear()}</span>
-            </>
-          )}
-          {episodeDetail.runtime > 0 && (
-            <>
-              <span>•</span>
-              <span>{episodeDetail.runtime}min</span>
-            </>
-          )}
-        </EpisodeMeta>
+      {showEpisodeInfo && (
+        <EpisodeInfo>
+          <ShowTitle>
+            <FaTv size={16} />
+            {tvShow.name}
+          </ShowTitle>
+          <EpisodeTitle>
+            S{seasonNum}E{episodeNum}: {episodeDetail.name}
+          </EpisodeTitle>
 
-        {episodeDetail.overview && (
-          <EpisodeOverview>{episodeDetail.overview}</EpisodeOverview>
-        )}
-      </EpisodeInfo>
+          <EpisodeMeta>
+            <Rating>★ {rating}</Rating>
+            {episodeDetail.air_date && (
+              <>
+                <span>•</span>
+                <span>{new Date(episodeDetail.air_date).getFullYear()}</span>
+              </>
+            )}
+            {episodeDetail.runtime > 0 && (
+              <>
+                <span>•</span>
+                <span>{episodeDetail.runtime}min</span>
+              </>
+            )}
+          </EpisodeMeta>
+
+          {episodeDetail.overview && (
+            <EpisodeOverview>{episodeDetail.overview}</EpisodeOverview>
+          )}
+        </EpisodeInfo>
+      )}
     </PlayerContainer>
   );
 };
