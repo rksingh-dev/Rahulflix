@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { FaPlay, FaPlus, FaCheck } from 'react-icons/fa';
-import { Movie } from '../types';
+import { FaPlay, FaPlus, FaCheck, FaTv, FaFilm } from 'react-icons/fa';
+import { Movie, TVShow, MediaItem, isMovie, isTVShow } from '../types';
 import { getPosterUrl, getThumbnailUrl } from '../services/api';
 
 const CardContainer = styled(motion.div)`
