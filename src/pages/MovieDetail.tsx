@@ -9,7 +9,7 @@ import MovieRow from '../components/MovieRow';
 
 const DetailContainer = styled.div`
   min-height: 100vh;
-  padding-top: 68px;
+  padding-top: 80px;
 `;
 
 const BackdropSection = styled.div<{ imageUrl: string }>`
