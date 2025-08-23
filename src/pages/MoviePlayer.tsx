@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { FaArrowLeft, FaPlay, FaPause, FaVolumeUp, FaVolumeMute, FaExpand } from 'react-icons/fa';
+import { FaArrowLeft } from 'react-icons/fa';
 import { MovieDetail } from '../types';
 import { movieApi, getMovieStreamUrl } from '../services/api';
 
