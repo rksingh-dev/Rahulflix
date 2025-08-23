@@ -332,7 +332,6 @@ const TVDetail: React.FC = () => {
   const lastAirYear = tvShow.last_air_date ? new Date(tvShow.last_air_date).getFullYear() : null;
   const yearRange = lastAirYear && lastAirYear !== firstAirYear ? `${firstAirYear}-${lastAirYear}` : `${firstAirYear}`;
   const rating = tvShow.vote_average.toFixed(1);
-  const selectedSeasonData = tvShow.seasons.find(s => s.season_number === selectedSeason);
 
   return (
     <DetailContainer>
