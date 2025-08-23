@@ -147,11 +147,7 @@ const MovieRow: React.FC<MovieRowProps> = ({
       container.addEventListener('scroll', checkScrollButtons);
       return () => container.removeEventListener('scroll', checkScrollButtons);
     }
-  }, [movies]);
-
-  if (!movies || movies.length === 0) {
-    return null;
-  }
+  }, [items]);
 
   return (
     <RowContainer>
