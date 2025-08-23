@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-import { Movie } from '../types';
+import { Movie, TVShow, MediaItem } from '../types';
 import MovieCard from './MovieCard';
 
 const RowContainer = styled.div`
