@@ -48,31 +48,42 @@ const Home: React.FC = () => {
   const category = searchParams.get('category');
 
   useEffect(() => {
-    const fetchMovies = async () => {
+    const fetchContent = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        const [trending, popular, topRated, upcoming] = await Promise.all([
+        const [
+          trendingMovies, popularMovies, topRatedMovies, upcomingMovies,
+          trendingTV, popularTV, topRatedTV, airingTodayTV
+        ] = await Promise.all([
           movieApi.getTrending(),
           movieApi.getPopular(),
           movieApi.getTopRated(),
           movieApi.getUpcoming(),
+          tvApi.getTrending(),
+          tvApi.getPopular(),
+          tvApi.getTopRated(),
+          tvApi.getAiringToday(),
         ]);
 
-        setTrendingMovies(trending);
-        setPopularMovies(popular);
-        setTopRatedMovies(topRated);
-        setUpcomingMovies(upcoming);
+        setTrendingMovies(trendingMovies);
+        setPopularMovies(popularMovies);
+        setTopRatedMovies(topRatedMovies);
+        setUpcomingMovies(upcomingMovies);
+        setTrendingTVShows(trendingTV);
+        setPopularTVShows(popularTV);
+        setTopRatedTVShows(topRatedTV);
+        setAiringTodayTVShows(airingTodayTV);
       } catch (err) {
-        setError('Failed to load movies. Please try again later.');
-        console.error('Error fetching movies:', err);
+        setError('Failed to load content. Please try again later.');
+        console.error('Error fetching content:', err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchMovies();
+    fetchContent();
   }, []);
 
   const handleAddToList = (movie: Movie) => {
