@@ -86,6 +86,82 @@ export const movieApi = {
   },
 };
 
+export const tvApi = {
+  // Get trending TV shows
+  getTrending: async (): Promise<TVShow[]> => {
+    const response = await api.get<ApiResponse<TVShow>>('/trending/tv/week');
+    return response.data.results;
+  },
+
+  // Get popular TV shows
+  getPopular: async (): Promise<TVShow[]> => {
+    const response = await api.get<ApiResponse<TVShow>>('/tv/popular');
+    return response.data.results;
+  },
+
+  // Get top rated TV shows
+  getTopRated: async (): Promise<TVShow[]> => {
+    const response = await api.get<ApiResponse<TVShow>>('/tv/top_rated');
+    return response.data.results;
+  },
+
+  // Get airing today TV shows
+  getAiringToday: async (): Promise<TVShow[]> => {
+    const response = await api.get<ApiResponse<TVShow>>('/tv/airing_today');
+    return response.data.results;
+  },
+
+  // Get on the air TV shows
+  getOnTheAir: async (): Promise<TVShow[]> => {
+    const response = await api.get<ApiResponse<TVShow>>('/tv/on_the_air');
+    return response.data.results;
+  },
+
+  // Get TV show details
+  getTVShowDetail: async (id: string): Promise<TVShowDetail> => {
+    const response = await api.get<TVShowDetail>(`/tv/${id}`);
+    return response.data;
+  },
+
+  // Get season details
+  getSeasonDetail: async (tvId: string, seasonNumber: number): Promise<Season> => {
+    const response = await api.get<Season>(`/tv/${tvId}/season/${seasonNumber}`);
+    return response.data;
+  },
+
+  // Get episode details
+  getEpisodeDetail: async (tvId: string, seasonNumber: number, episodeNumber: number): Promise<Episode> => {
+    const response = await api.get<Episode>(`/tv/${tvId}/season/${seasonNumber}/episode/${episodeNumber}`);
+    return response.data;
+  },
+
+  // Search TV shows
+  searchTVShows: async (query: string, page: number = 1): Promise<ApiResponse<TVShow>> => {
+    const response = await api.get<ApiResponse<TVShow>>('/search/tv', {
+      params: { query, page },
+    });
+    return response.data;
+  },
+
+  // Get TV shows by genre
+  getTVShowsByGenre: async (genreId: number): Promise<TVShow[]> => {
+    const response = await api.get<ApiResponse<TVShow>>('/discover/tv', {
+      params: { with_genres: genreId },
+    });
+    return response.data.results;
+  },
+};
+
+// Multi-search API for both movies and TV shows
+export const searchApi = {
+  searchMulti: async (query: string, page: number = 1): Promise<ApiResponse<MediaItem>> => {
+    const response = await api.get<ApiResponse<MediaItem>>('/search/multi', {
+      params: { query, page },
+    });
+    return response.data;
+  },
+};
+
 // 111movies API integration
 export const getMovieStreamUrl = (movieId: string): string => {
   // Convert TMDB ID to IMDB ID format if needed
