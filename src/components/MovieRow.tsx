@@ -176,12 +176,12 @@ const MovieRow: React.FC<MovieRowProps> = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          {movies.map((movie) => (
-            <MovieCardWrapper key={movie.id}>
+          {items.map((item) => (
+            <MovieCardWrapper key={item.id}>
               <MovieCard
-                movie={movie}
+                media={item}
                 onAddToList={onAddToList}
-                isInList={watchlist.includes(movie.id)}
+                isInList={watchlist.includes(item.id)}
               />
             </MovieCardWrapper>
           ))}
