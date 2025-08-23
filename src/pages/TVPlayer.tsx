@@ -262,7 +262,7 @@ const TVPlayer: React.FC = () => {
     };
 
     fetchTVShowAndEpisode();
-  }, [id, season, episode]);
+  }, [id, season, episode, seasonNum, episodeNum]);
 
   const handlePreviousEpisode = () => {
     if (episodeNum > 1) {
