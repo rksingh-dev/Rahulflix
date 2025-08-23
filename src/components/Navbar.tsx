@@ -195,7 +195,7 @@ const Navbar: React.FC = () => {
           <form onSubmit={handleSearch}>
             <SearchInput
               type="text"
-              placeholder="Search movies..."
+              placeholder="Search movies & TV shows..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className={searchExpanded ? 'expanded' : ''}
