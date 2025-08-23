@@ -184,10 +184,10 @@ const Navbar: React.FC = () => {
 
       <NavLinks>
         <NavLink to="/" onClick={e => handleNavLinkClick(e, 'hero-banner', '/')}>Home</NavLink>
+        <NavLink to="/" onClick={e => handleNavLinkClick(e, 'movies', '/')}>Movies</NavLink>
+        <NavLink to="/" onClick={e => handleNavLinkClick(e, 'tv-shows', '/')}>TV Shows</NavLink>
         <NavLink to="/" onClick={e => handleNavLinkClick(e, 'trending', '/')}>Trending</NavLink>
         <NavLink to="/" onClick={e => handleNavLinkClick(e, 'popular', '/')}>Popular</NavLink>
-        <NavLink to="/" onClick={e => handleNavLinkClick(e, 'top-rated', '/')}>Top Rated</NavLink>
-        <NavLink to="/" onClick={e => handleNavLinkClick(e, 'upcoming', '/')}>Upcoming</NavLink>
       </NavLinks>
 
       <RightSection>
