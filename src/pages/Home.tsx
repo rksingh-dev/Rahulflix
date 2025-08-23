@@ -165,30 +165,54 @@ const Home: React.FC = () => {
                 watchlist={watchlist}
               />
             </div>
-            <div id="popular">
+            <div id="movies">
               <MovieRow
-                title="Popular on RahulGram"
+                title="Popular Movies"
                 movies={popularMovies.slice(0, 6)}
                 onAddToList={handleAddToList}
                 watchlist={watchlist}
               />
             </div>
-            <div id="top-rated">
+            <div id="tv-shows">
               <MovieRow
-                title="Top Rated"
+                title="Popular TV Shows"
+                tvShows={popularTVShows.slice(0, 6)}
+                onAddToList={handleAddToList}
+                watchlist={watchlist}
+              />
+            </div>
+            <div id="popular">
+              <MovieRow
+                title="Top Rated Movies"
                 movies={topRatedMovies.slice(0, 6)}
                 onAddToList={handleAddToList}
                 watchlist={watchlist}
               />
             </div>
-            <div id="upcoming">
-              <MovieRow
-                title="Coming Soon"
-                movies={upcomingMovies.slice(0, 6)}
-                onAddToList={handleAddToList}
-                watchlist={watchlist}
-              />
-            </div>
+            <MovieRow
+              title="Top Rated TV Shows"
+              tvShows={topRatedTVShows.slice(0, 6)}
+              onAddToList={handleAddToList}
+              watchlist={watchlist}
+            />
+            <MovieRow
+              title="Trending TV Shows"
+              tvShows={trendingTVShows.slice(0, 6)}
+              onAddToList={handleAddToList}
+              watchlist={watchlist}
+            />
+            <MovieRow
+              title="Airing Today"
+              tvShows={airingTodayTVShows.slice(0, 6)}
+              onAddToList={handleAddToList}
+              watchlist={watchlist}
+            />
+            <MovieRow
+              title="Coming Soon"
+              movies={upcomingMovies.slice(0, 6)}
+              onAddToList={handleAddToList}
+              watchlist={watchlist}
+            />
           </>
         )}
 
