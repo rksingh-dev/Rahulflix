@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { FaPlay, FaPlus, FaCheck, FaTv, FaFilm } from 'react-icons/fa';
-import { Movie, TVShow, MediaItem, isMovie, isTVShow } from '../types';
+import { Movie, TVShow, MediaItem, isMovie } from '../types';
 import { getPosterUrl } from '../services/api';
 
 const CardContainer = styled(motion.div)`
