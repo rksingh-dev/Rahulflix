@@ -119,19 +119,6 @@ const PlayButton = styled(Link)`
   }
 `;
 
-const GenreTags = styled.div`
-  display: flex;
-  gap: 0.25rem;
-  flex-wrap: wrap;
-`;
-
-const GenreTag = styled.span`
-  background: rgba(255, 255, 255, 0.2);
-  color: #fff;
-  padding: 2px 6px;
-  border-radius: 2px;
-  font-size: 0.7rem;
-`;
 
 interface MovieCardProps {
   movie?: Movie;
