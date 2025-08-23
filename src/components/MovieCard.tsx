@@ -134,25 +134,40 @@ const GenreTag = styled.span`
 `;
 
 interface MovieCardProps {
-  movie: Movie;
-  onAddToList?: (movie: Movie) => void;
+  movie?: Movie;
+  tvShow?: TVShow;
+  media?: MediaItem;
+  onAddToList?: (item: MediaItem) => void;
   isInList?: boolean;
 }
 
-const MovieCard: React.FC<MovieCardProps> = ({ 
-  movie, 
-  onAddToList, 
-  isInList = false 
+const MovieCard: React.FC<MovieCardProps> = ({
+  movie,
+  tvShow,
+  media,
+  onAddToList,
+  isInList = false
 }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const year = new Date(movie.release_date).getFullYear();
-  const rating = movie.vote_average.toFixed(1);
+
+  // Determine the media item to work with
+  const mediaItem = media || movie || tvShow;
+  if (!mediaItem) return null;
+
+  const isMovieItem = isMovie(mediaItem);
+  const isTVItem = isTVShow(mediaItem);
+
+  const title = isMovieItem ? mediaItem.title : mediaItem.name;
+  const releaseDate = isMovieItem ? mediaItem.release_date : mediaItem.first_air_date;
+  const year = releaseDate ? new Date(releaseDate).getFullYear() : '';
+  const rating = mediaItem.vote_average.toFixed(1);
+  const posterPath = mediaItem.poster_path;
 
   const handleAddToList = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (onAddToList) {
-      onAddToList(movie);
+      onAddToList(mediaItem);
     }
   };
 
