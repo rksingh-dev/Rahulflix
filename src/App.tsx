@@ -18,7 +18,8 @@ const AppContainer = styled.div`
 
 function App() {
   const location = useLocation();
-  const hideNavbar = location.pathname.startsWith('/watch/');
+  const hideNavbar = location.pathname.startsWith('/watch/') ||
+                     location.pathname.includes('/tv/') && location.pathname.includes('/watch/');
 
   return (
     <AppContainer>
@@ -27,7 +28,9 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/movie/:id" element={<MovieDetail />} />
+        <Route path="/tv/:id" element={<TVDetail />} />
         <Route path="/watch/:id" element={<MoviePlayer />} />
+        <Route path="/tv/:id/watch/:season/:episode" element={<TVPlayer />} />
         <Route path="/search" element={<SearchResults />} />
       </Routes>
     </AppContainer>
