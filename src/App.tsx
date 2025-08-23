@@ -19,7 +19,7 @@ const AppContainer = styled.div`
 function App() {
   const location = useLocation();
   const hideNavbar = location.pathname.startsWith('/watch/') ||
-                     location.pathname.includes('/tv/') && location.pathname.includes('/watch/');
+                     (location.pathname.includes('/tv/') && location.pathname.includes('/watch/'));
 
   return (
     <AppContainer>
