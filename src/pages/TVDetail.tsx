@@ -191,57 +191,6 @@ const SeasonMeta = styled.p`
   margin: 0;
 `;
 
-const EpisodesSection = styled.div`
-  margin-bottom: 2rem;
-`;
-
-const EpisodesTitle = styled.h3`
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: #fff;
-  margin-bottom: 1rem;
-`;
-
-const EpisodesGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem;
-`;
-
-const EpisodeCard = styled.div`
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  padding: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.15);
-  }
-`;
-
-const EpisodeTitle = styled.h5`
-  font-size: 1rem;
-  font-weight: 600;
-  color: #fff;
-  margin: 0 0 0.5rem 0;
-`;
-
-const EpisodeMeta = styled.p`
-  font-size: 0.8rem;
-  color: #b3b3b3;
-  margin: 0 0 0.5rem 0;
-`;
-
-const EpisodeOverview = styled.p`
-  font-size: 0.9rem;
-  color: #e5e5e5;
-  margin: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-`;
 
 const ButtonGroup = styled.div`
   display: flex;
