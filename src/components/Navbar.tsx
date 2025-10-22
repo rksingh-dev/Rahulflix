@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { FaSearch, FaBell, FaUser } from 'react-icons/fa';
+import { FaUser } from 'react-icons/fa';
 
 const Nav = styled(motion.nav)`
   position: fixed;
@@ -17,7 +17,7 @@ const Nav = styled(motion.nav)`
   justify-content: space-between;
   transition: background-color 0.3s ease;
   background: ${({ scrolled }: { scrolled: boolean }) =>
-    scrolled ? 'rgba(0, 0, 0, 0.9)' : 'transparent'};
+    scrolled ? 'rgba(0, 0, 0, 0.9)' : 'rgba(0, 0, 0, 0.5)'};
 `;
 
 const Logo = styled(Link)`
@@ -26,92 +26,10 @@ const Logo = styled(Link)`
   font-weight: 700;
   text-decoration: none;
   letter-spacing: -0.5px;
-`;
-
-const NavLinks = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-
-  @media (max-width: 768px) {
-    display: none;
-  }
-`;
-
-const NavLink = styled(Link)`
-  color: #fff;
-  text-decoration: none;
-  font-size: 0.9rem;
-  font-weight: 400;
   transition: color 0.3s ease;
 
   &:hover {
-    color: #b3b3b3;
-  }
-`;
-
-const RightSection = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-`;
-
-const SearchContainer = styled.div`
-  position: relative;
-  display: flex;
-  align-items: center;
-`;
-
-const SearchInput = styled(motion.input)`
-  background: transparent;
-  border: 1px solid #fff;
-  border-radius: 4px;
-  color: #fff;
-  padding: 8px 12px;
-  font-size: 0.9rem;
-  width: 0;
-  opacity: 0;
-  transition: all 0.3s ease;
-
-  &::placeholder {
-    color: #b3b3b3;
-  }
-
-  &.expanded {
-    width: 200px;
-    opacity: 1;
-  }
-`;
-
-const SearchButton = styled.button`
-  background: transparent;
-  border: none;
-  color: #fff;
-  cursor: pointer;
-  padding: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: color 0.3s ease;
-
-  &:hover {
-    color: #e50914;
-  }
-`;
-
-const IconButton = styled.button`
-  background: transparent;
-  border: none;
-  color: #fff;
-  cursor: pointer;
-  padding: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: color 0.3s ease;
-
-  &:hover {
-    color: #e50914;
+    color: #b2070f;
   }
 `;
 
@@ -133,9 +51,6 @@ const UserAvatar = styled.div`
 
 const Navbar: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
-  const [searchExpanded, setSearchExpanded] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -146,33 +61,6 @@ const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-      setSearchQuery('');
-      setSearchExpanded(false);
-    }
-  };
-
-  const toggleSearch = () => {
-    setSearchExpanded(!searchExpanded);
-    if (searchExpanded) {
-      setSearchQuery('');
-    }
-  };
-
-  const handleNavLinkClick = (e: React.MouseEvent, sectionId: string, path: string) => {
-    e.preventDefault();
-    navigate(path);
-    setTimeout(() => {
-      const el = document.getElementById(sectionId);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }, 100); // Wait for navigation
-  };
-
   return (
     <Nav
       scrolled={scrolled}
@@ -182,39 +70,9 @@ const Navbar: React.FC = () => {
     >
       <Logo to="/">Rahulflix</Logo>
 
-      <NavLinks>
-        <NavLink to="/" onClick={e => handleNavLinkClick(e, 'hero-banner', '/')}>Home</NavLink>
-        <NavLink to="/" onClick={e => handleNavLinkClick(e, 'movies', '/')}>Movies</NavLink>
-        <NavLink to="/" onClick={e => handleNavLinkClick(e, 'tv-shows', '/')}>TV Shows</NavLink>
-        <NavLink to="/" onClick={e => handleNavLinkClick(e, 'trending', '/')}>Trending</NavLink>
-        <NavLink to="/" onClick={e => handleNavLinkClick(e, 'popular', '/')}>Popular</NavLink>
-      </NavLinks>
-
-      <RightSection>
-        <SearchContainer>
-          <form onSubmit={handleSearch}>
-            <SearchInput
-              type="text"
-              placeholder="Search movies & TV shows..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className={searchExpanded ? 'expanded' : ''}
-              initial={false}
-            />
-          </form>
-          <SearchButton onClick={toggleSearch}>
-            <FaSearch size={16} />
-          </SearchButton>
-        </SearchContainer>
-
-        <IconButton>
-          <FaBell size={16} />
-        </IconButton>
-
-        <UserAvatar as="a" href="https://www.linkedin.com/in/rahul-kumar-singh-1a14401ba/" target="_blank" rel="noopener noreferrer">
-          <FaUser size={16} />
-        </UserAvatar>
-      </RightSection>
+      <UserAvatar as="a" href="https://www.linkedin.com/in/rahul-kumar-singh-1a14401ba/" target="_blank" rel="noopener noreferrer">
+        <FaUser size={16} />
+      </UserAvatar>
     </Nav>
   );
 };
