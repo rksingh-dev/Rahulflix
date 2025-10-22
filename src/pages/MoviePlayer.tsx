@@ -142,6 +142,7 @@ const MoviePlayer: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [streamUrl, setStreamUrl] = useState<string>('');
+  const [showMovieInfo, setShowMovieInfo] = useState(true);
 
   useEffect(() => {
     const loadStream = () => {
@@ -169,6 +170,17 @@ const MoviePlayer: React.FC = () => {
 
     loadStream();
   }, [id]);
+
+  // Auto-hide movie info after 2 seconds
+  useEffect(() => {
+    setShowMovieInfo(true);
+
+    const timer = setTimeout(() => {
+      setShowMovieInfo(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [id]); // Reset timer when movie changes
 
   const handleRetry = () => {
     window.location.reload();
@@ -228,10 +240,12 @@ const MoviePlayer: React.FC = () => {
         />
       </VideoContainer>
 
-      <MovieInfo>
-        <MovieTitle>Movie Player</MovieTitle>
-        <MovieId>IMDB ID: {formattedId}</MovieId>
-      </MovieInfo>
+      {showMovieInfo && (
+        <MovieInfo>
+          <MovieTitle>Movie Player</MovieTitle>
+          <MovieId>IMDB ID: {formattedId}</MovieId>
+        </MovieInfo>
+      )}
     </PlayerContainer>
   );
 };
