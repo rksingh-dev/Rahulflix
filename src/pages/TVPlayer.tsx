@@ -3,8 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { FaArrowLeft, FaChevronLeft, FaChevronRight, FaTv } from 'react-icons/fa';
-import { TVShowDetail, Episode } from '../types';
-import { tvApi, getTVShowStreamUrl } from '../services/api';
+import { getTVShowStreamUrl } from '../services/api';
 
 const PlayerContainer = styled.div`
   min-height: 100vh;
@@ -103,22 +102,6 @@ const EpisodeMeta = styled.div`
   margin-bottom: 0.5rem;
 `;
 
-const Rating = styled.span`
-  color: #46d369;
-  font-weight: 600;
-`;
-
-const EpisodeOverview = styled.p`
-  font-size: 0.9rem;
-  line-height: 1.4;
-  color: #e5e5e5;
-  margin: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-`;
-
 const VideoContainer = styled.div`
   width: 100%;
   height: 100vh;
@@ -207,109 +190,56 @@ const TVPlayer: React.FC = () => {
     episode: string; 
   }>();
   const navigate = useNavigate();
-  const [tvShow, setTVShow] = useState<TVShowDetail | null>(null);
-  const [episodeDetail, setEpisodeDetail] = useState<Episode | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [streamUrl, setStreamUrl] = useState<string>('');
-  const [showEpisodeInfo, setShowEpisodeInfo] = useState(true);
 
   const seasonNum = parseInt(season || '1');
   const episodeNum = parseInt(episode || '1');
 
   useEffect(() => {
-    const fetchTVShowAndEpisode = async () => {
-      if (!id) return;
+    const loadStream = () => {
+      if (!id) {
+        setError('No IMDB ID provided');
+        setLoading(false);
+        return;
+      }
 
       try {
         setLoading(true);
         setError(null);
 
-        // Fetch TV show details
-        const tvShowData = await tvApi.getTVShowDetail(id);
-        setTVShow(tvShowData);
-
-        // Try to fetch episode details (optional, might not be available)
-        try {
-          const episodeData = await tvApi.getEpisodeDetail(id, seasonNum, episodeNum);
-          setEpisodeDetail(episodeData);
-        } catch (episodeErr) {
-          console.warn('Episode details not available:', episodeErr);
-          // Create a basic episode object
-          setEpisodeDetail({
-            id: episodeNum,
-            name: `Episode ${episodeNum}`,
-            overview: '',
-            still_path: '',
-            episode_number: episodeNum,
-            season_number: seasonNum,
-            air_date: '',
-            vote_average: 0,
-            vote_count: 0,
-            runtime: 0
-          });
-        }
-
-        // Generate stream URL using 111movies API
+        // Generate stream URL using 111movies API with IMDB ID
         const streamUrl = getTVShowStreamUrl(id, seasonNum, episodeNum);
         setStreamUrl(streamUrl);
 
         setLoading(false);
       } catch (err) {
-        setError('Failed to load episode. Please try again later.');
-        console.error('Error fetching TV show/episode:', err);
+        setError('Failed to load episode. Please check the IMDB ID and try again.');
+        console.error('Error generating stream URL:', err);
         setLoading(false);
       }
     };
 
-    fetchTVShowAndEpisode();
+    loadStream();
   }, [id, season, episode, seasonNum, episodeNum]);
-
-  // Auto-hide episode info after 2 seconds
-  useEffect(() => {
-    // Show episode info when episode changes
-    setShowEpisodeInfo(true);
-
-    const timer = setTimeout(() => {
-      setShowEpisodeInfo(false);
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, [id, seasonNum, episodeNum]); // Reset timer when episode changes
 
   const handlePreviousEpisode = () => {
     if (episodeNum > 1) {
       navigate(`/tv/${id}/watch/${seasonNum}/${episodeNum - 1}`);
     } else if (seasonNum > 1) {
-      // Go to last episode of previous season
-      const prevSeason = tvShow?.seasons.find(s => s.season_number === seasonNum - 1);
-      if (prevSeason) {
-        navigate(`/tv/${id}/watch/${seasonNum - 1}/${prevSeason.episode_count}`);
-      }
+      // Go to last episode of previous season (assuming 20 episodes max per season)
+      navigate(`/tv/${id}/watch/${seasonNum - 1}/20`);
     }
   };
 
   const handleNextEpisode = () => {
-    const currentSeason = tvShow?.seasons.find(s => s.season_number === seasonNum);
-    if (currentSeason && episodeNum < currentSeason.episode_count) {
-      navigate(`/tv/${id}/watch/${seasonNum}/${episodeNum + 1}`);
-    } else {
-      // Go to first episode of next season
-      const nextSeason = tvShow?.seasons.find(s => s.season_number === seasonNum + 1);
-      if (nextSeason) {
-        navigate(`/tv/${id}/watch/${seasonNum + 1}/1`);
-      }
-    }
+    // Go to next episode (assuming unlimited episodes for simplicity)
+    navigate(`/tv/${id}/watch/${seasonNum}/${episodeNum + 1}`);
   };
 
   const canGoPrevious = () => {
-    return episodeNum > 1 || (seasonNum > 1 && tvShow?.seasons.some(s => s.season_number === seasonNum - 1));
-  };
-
-  const canGoNext = () => {
-    const currentSeason = tvShow?.seasons.find(s => s.season_number === seasonNum);
-    return (currentSeason && episodeNum < currentSeason.episode_count) || 
-           tvShow?.seasons.some(s => s.season_number === seasonNum + 1);
+    return episodeNum > 1 || seasonNum > 1;
   };
 
   const handleRetry = () => {
@@ -319,9 +249,9 @@ const TVPlayer: React.FC = () => {
   if (loading) {
     return (
       <PlayerContainer>
-        <BackButton to={`/tv/${id}`}>
+        <BackButton to="/">
           <FaArrowLeft size={16} />
-          Back to Show
+          Back to Search
         </BackButton>
         
         <LoadingContainer>
@@ -335,30 +265,30 @@ const TVPlayer: React.FC = () => {
     );
   }
 
-  if (error || !tvShow || !episodeDetail) {
+  if (error) {
     return (
       <PlayerContainer>
-        <BackButton to={`/tv/${id}`}>
+        <BackButton to="/">
           <FaArrowLeft size={16} />
-          Back to Show
+          Back to Search
         </BackButton>
         
         <ErrorContainer>
           <ErrorTitle>Oops! Something went wrong</ErrorTitle>
-          <ErrorMessage>{error || 'Episode not found'}</ErrorMessage>
+          <ErrorMessage>{error}</ErrorMessage>
           <RetryButton onClick={handleRetry}>Try Again</RetryButton>
         </ErrorContainer>
       </PlayerContainer>
     );
   }
 
-  const rating = episodeDetail.vote_average > 0 ? episodeDetail.vote_average.toFixed(1) : 'N/A';
+  const formattedId = id?.startsWith('tt') ? id : `tt${id}`;
 
   return (
     <PlayerContainer>
-      <BackButton to={`/tv/${id}`}>
+      <BackButton to="/">
         <FaArrowLeft size={16} />
-        Back to Show
+        Back to Search
       </BackButton>
 
       <EpisodeControls>
@@ -371,7 +301,6 @@ const TVPlayer: React.FC = () => {
         </EpisodeButton>
         <EpisodeButton 
           onClick={handleNextEpisode}
-          disabled={!canGoNext()}
         >
           Next
           <FaChevronRight size={14} />
@@ -381,43 +310,25 @@ const TVPlayer: React.FC = () => {
       <VideoContainer>
         <VideoFrame
           src={streamUrl}
-          title={`${tvShow.name} - S${seasonNum}E${episodeNum}`}
+          title={`TV Show: ${formattedId} - S${seasonNum}E${episodeNum}`}
           allowFullScreen
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         />
       </VideoContainer>
 
-      {showEpisodeInfo && (
-        <EpisodeInfo>
-          <ShowTitle>
-            <FaTv size={16} />
-            {tvShow.name}
-          </ShowTitle>
-          <EpisodeTitle>
-            S{seasonNum}E{episodeNum}: {episodeDetail.name}
-          </EpisodeTitle>
+      <EpisodeInfo>
+        <ShowTitle>
+          <FaTv size={16} />
+          TV Show Player
+        </ShowTitle>
+        <EpisodeTitle>
+          S{seasonNum}E{episodeNum}
+        </EpisodeTitle>
 
-          <EpisodeMeta>
-            <Rating>★ {rating}</Rating>
-            {episodeDetail.air_date && (
-              <>
-                <span>•</span>
-                <span>{new Date(episodeDetail.air_date).getFullYear()}</span>
-              </>
-            )}
-            {episodeDetail.runtime > 0 && (
-              <>
-                <span>•</span>
-                <span>{episodeDetail.runtime}min</span>
-              </>
-            )}
-          </EpisodeMeta>
-
-          {episodeDetail.overview && (
-            <EpisodeOverview>{episodeDetail.overview}</EpisodeOverview>
-          )}
-        </EpisodeInfo>
-      )}
+        <EpisodeMeta>
+          <span>IMDB ID: {formattedId}</span>
+        </EpisodeMeta>
+      </EpisodeInfo>
     </PlayerContainer>
   );
 };
