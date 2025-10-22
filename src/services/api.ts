@@ -162,19 +162,17 @@ export const searchApi = {
   },
 };
 
-// 111movies API integration
-export const getMovieStreamUrl = (movieId: string): string => {
-  // Convert TMDB ID to IMDB ID format if needed
-  // For demo purposes, we'll use the TMDB ID directly
-  // In a real implementation, you'd need to map TMDB IDs to IMDB IDs
-  return `https://111movies.com/movie/${movieId}`;
+// 111movies API integration with IMDB IDs
+export const getMovieStreamUrl = (imdbId: string): string => {
+  // Ensure IMDB ID format (add 'tt' prefix if not present)
+  const formattedId = imdbId.startsWith('tt') ? imdbId : `tt${imdbId}`;
+  return `https://111movies.com/movie/${formattedId}`;
 };
 
-export const getTVShowStreamUrl = (tvId: string, season: number, episode: number): string => {
-  // Convert TMDB ID to IMDB ID format if needed
-  // For demo purposes, we'll use the TMDB ID directly
-  // In a real implementation, you'd need to map TMDB IDs to IMDB IDs
-  return `https://111movies.com/tv/${tvId}/${season}/${episode}`;
+export const getTVShowStreamUrl = (imdbId: string, season: number, episode: number): string => {
+  // Ensure IMDB ID format (add 'tt' prefix if not present)
+  const formattedId = imdbId.startsWith('tt') ? imdbId : `tt${imdbId}`;
+  return `https://111movies.com/tv/${formattedId}/${season}/${episode}`;
 };
 
 // Helper function to get stream URL based on content type
