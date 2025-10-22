@@ -3,8 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { FaArrowLeft } from 'react-icons/fa';
-import { MovieDetail } from '../types';
-import { movieApi, getMovieStreamUrl } from '../services/api';
+import { getMovieStreamUrl } from '../services/api';
 
 const PlayerContainer = styled.div`
   min-height: 100vh;
@@ -115,39 +114,60 @@ const RetryButton = styled.button`
   }
 `;
 
+const MovieInfo = styled.div`
+  position: absolute;
+  bottom: 2rem;
+  left: 2rem;
+  color: #fff;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 1rem;
+  border-radius: 8px;
+`;
+
+const MovieTitle = styled.h1`
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 0;
+`;
+
+const MovieId = styled.p`
+  font-size: 0.9rem;
+  color: #b3b3b3;
+  margin: 0.25rem 0 0 0;
+`;
 
 const MoviePlayer: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [movie, setMovie] = useState<MovieDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [streamUrl, setStreamUrl] = useState<string>('');
 
   useEffect(() => {
-    const fetchMovieAndStream = async () => {
-      if (!id) return;
+    const loadStream = () => {
+      if (!id) {
+        setError('No IMDB ID provided');
+        setLoading(false);
+        return;
+      }
 
       try {
         setLoading(true);
         setError(null);
 
-        // Fetch movie details
-        const movieData = await movieApi.getMovieDetail(id);
-        setMovie(movieData);
-
-        // Generate stream URL using 111movies API
+        // Generate stream URL using 111movies API with IMDB ID
         const streamUrl = getMovieStreamUrl(id);
         setStreamUrl(streamUrl);
 
         setLoading(false);
       } catch (err) {
-        setError('Failed to load movie. Please try again later.');
-        console.error('Error fetching movie:', err);
+        setError('Failed to load movie. Please check the IMDB ID and try again.');
+        console.error('Error generating stream URL:', err);
         setLoading(false);
       }
     };
 
-    fetchMovieAndStream();
+    loadStream();
   }, [id]);
 
   const handleRetry = () => {
@@ -159,7 +179,7 @@ const MoviePlayer: React.FC = () => {
       <PlayerContainer>
         <BackButton to="/">
           <FaArrowLeft size={16} />
-          Back to Browse
+          Back to Search
         </BackButton>
         
         <LoadingContainer>
@@ -173,38 +193,45 @@ const MoviePlayer: React.FC = () => {
     );
   }
 
-  if (error || !movie) {
+  if (error) {
     return (
       <PlayerContainer>
         <BackButton to="/">
           <FaArrowLeft size={16} />
-          Back to Browse
+          Back to Search
         </BackButton>
         
         <ErrorContainer>
           <ErrorTitle>Oops! Something went wrong</ErrorTitle>
-          <ErrorMessage>{error || 'Movie not found'}</ErrorMessage>
+          <ErrorMessage>{error}</ErrorMessage>
           <RetryButton onClick={handleRetry}>Try Again</RetryButton>
         </ErrorContainer>
       </PlayerContainer>
     );
   }
 
+  const formattedId = id?.startsWith('tt') ? id : `tt${id}`;
+
   return (
     <PlayerContainer>
       <BackButton to="/">
         <FaArrowLeft size={16} />
-        Back to Browse
+        Back to Search
       </BackButton>
 
       <VideoContainer>
         <VideoFrame
           src={streamUrl}
-          title={movie.title}
+          title={`Movie: ${formattedId}`}
           allowFullScreen
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         />
       </VideoContainer>
+
+      <MovieInfo>
+        <MovieTitle>Movie Player</MovieTitle>
+        <MovieId>IMDB ID: {formattedId}</MovieId>
+      </MovieInfo>
     </PlayerContainer>
   );
 };
