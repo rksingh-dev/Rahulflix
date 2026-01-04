@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { FaArrowLeft, FaChevronLeft, FaChevronRight, FaTv } from 'react-icons/fa';
-import { getTVShowStreamUrl } from '../services/api';
+import { getStreamUrl, ServerType } from '../services/api';
 
 const PlayerContainer = styled.div`
   min-height: 100vh;
@@ -40,6 +40,11 @@ const EpisodeControls = styled.div`
   display: flex;
   gap: 0.5rem;
   z-index: 1000;
+  opacity: 0.8;
+  
+  &:hover {
+    opacity: 1;
+  }
 `;
 
 const EpisodeButton = styled.button`
@@ -184,12 +189,15 @@ const RetryButton = styled.button`
 `;
 
 const TVPlayer: React.FC = () => {
-  const { id, season, episode } = useParams<{ 
-    id: string; 
-    season: string; 
-    episode: string; 
+  const { id, season, episode } = useParams<{
+    id: string;
+    season: string;
+    episode: string;
   }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const server = (location.state as { server: ServerType })?.server || '111movies';
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [streamUrl, setStreamUrl] = useState<string>('');
@@ -209,8 +217,8 @@ const TVPlayer: React.FC = () => {
         setLoading(true);
         setError(null);
 
-        // Generate stream URL using 111movies API with IMDB ID
-        const streamUrl = getTVShowStreamUrl(id, seasonNum, episodeNum);
+        // Generate stream URL using selected server
+        const streamUrl = getStreamUrl(id, 'tv', seasonNum, episodeNum, server);
         setStreamUrl(streamUrl);
 
         setLoading(false);
@@ -222,20 +230,20 @@ const TVPlayer: React.FC = () => {
     };
 
     loadStream();
-  }, [id, season, episode, seasonNum, episodeNum]);
+  }, [id, season, episode, seasonNum, episodeNum, server]);
 
   const handlePreviousEpisode = () => {
     if (episodeNum > 1) {
-      navigate(`/tv/${id}/watch/${seasonNum}/${episodeNum - 1}`);
+      navigate(`/tv/${id}/watch/${seasonNum}/${episodeNum - 1}`, { state: { server } });
     } else if (seasonNum > 1) {
       // Go to last episode of previous season (assuming 20 episodes max per season)
-      navigate(`/tv/${id}/watch/${seasonNum - 1}/20`);
+      navigate(`/tv/${id}/watch/${seasonNum - 1}/20`, { state: { server } });
     }
   };
 
   const handleNextEpisode = () => {
     // Go to next episode (assuming unlimited episodes for simplicity)
-    navigate(`/tv/${id}/watch/${seasonNum}/${episodeNum + 1}`);
+    navigate(`/tv/${id}/watch/${seasonNum}/${episodeNum + 1}`, { state: { server } });
   };
 
   const canGoPrevious = () => {
@@ -253,7 +261,7 @@ const TVPlayer: React.FC = () => {
           <FaArrowLeft size={16} />
           Back to Search
         </BackButton>
-        
+
         <LoadingContainer>
           <LoadingSpinner
             animate={{ rotate: 360 }}
@@ -272,7 +280,7 @@ const TVPlayer: React.FC = () => {
           <FaArrowLeft size={16} />
           Back to Search
         </BackButton>
-        
+
         <ErrorContainer>
           <ErrorTitle>Oops! Something went wrong</ErrorTitle>
           <ErrorMessage>{error}</ErrorMessage>
@@ -292,14 +300,14 @@ const TVPlayer: React.FC = () => {
       </BackButton>
 
       <EpisodeControls>
-        <EpisodeButton 
+        <EpisodeButton
           onClick={handlePreviousEpisode}
           disabled={!canGoPrevious()}
         >
           <FaChevronLeft size={14} />
           Previous
         </EpisodeButton>
-        <EpisodeButton 
+        <EpisodeButton
           onClick={handleNextEpisode}
         >
           Next
@@ -327,6 +335,7 @@ const TVPlayer: React.FC = () => {
 
         <EpisodeMeta>
           <span>IMDB ID: {formattedId}</span>
+          <span>Server: {server === '111movies' ? '111Movies' : 'RiveStream'}</span>
         </EpisodeMeta>
       </EpisodeInfo>
     </PlayerContainer>

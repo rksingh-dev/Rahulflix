@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { FaArrowLeft } from 'react-icons/fa';
-import { getMovieStreamUrl } from '../services/api';
+import { getStreamUrl, ServerType } from '../services/api';
 
 const PlayerContainer = styled.div`
   min-height: 100vh;
@@ -139,6 +139,9 @@ const MovieId = styled.p`
 
 const MoviePlayer: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const location = useLocation();
+  const server = (location.state as { server: ServerType })?.server || '111movies';
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [streamUrl, setStreamUrl] = useState<string>('');
@@ -156,8 +159,8 @@ const MoviePlayer: React.FC = () => {
         setLoading(true);
         setError(null);
 
-        // Generate stream URL using 111movies API with IMDB ID
-        const streamUrl = getMovieStreamUrl(id);
+        // Generate stream URL using selected server
+        const streamUrl = getStreamUrl(id, 'movie', undefined, undefined, server);
         setStreamUrl(streamUrl);
 
         setLoading(false);
@@ -169,7 +172,7 @@ const MoviePlayer: React.FC = () => {
     };
 
     loadStream();
-  }, [id]);
+  }, [id, server]);
 
   // Auto-hide movie info after 2 seconds
   useEffect(() => {
@@ -193,7 +196,7 @@ const MoviePlayer: React.FC = () => {
           <FaArrowLeft size={16} />
           Back to Search
         </BackButton>
-        
+
         <LoadingContainer>
           <LoadingSpinner
             animate={{ rotate: 360 }}
@@ -212,7 +215,7 @@ const MoviePlayer: React.FC = () => {
           <FaArrowLeft size={16} />
           Back to Search
         </BackButton>
-        
+
         <ErrorContainer>
           <ErrorTitle>Oops! Something went wrong</ErrorTitle>
           <ErrorMessage>{error}</ErrorMessage>

@@ -1,6 +1,17 @@
 import { createGlobalStyle } from 'styled-components';
 
 export const GlobalStyles = createGlobalStyle`
+  :root {
+    --primary-red: #e50914;
+    --hover-red: #f40612;
+    --bg-black: #050505;
+    --bg-dark-gray: #181818;
+    --text-white: #ffffff;
+    --text-gray: #b3b3b3;
+    --glass-bg: rgba(22, 22, 22, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.1);
+  }
+
   * {
     margin: 0;
     padding: 0;
@@ -8,13 +19,13 @@ export const GlobalStyles = createGlobalStyle`
   }
 
   body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
       'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
       sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background: #000;
-    color: #fff;
+    background: var(--bg-black);
+    color: var(--text-white);
     overflow-x: hidden;
   }
 
