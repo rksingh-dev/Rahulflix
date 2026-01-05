@@ -8,7 +8,7 @@ export const getMovieStreamUrl = (imdbId: string): string => {
 export const getTVShowStreamUrl = (imdbId: string, season: number, episode: number): string => {
   // Ensure IMDB ID format (add 'tt' prefix if not present)
   const formattedId = imdbId.startsWith('tt') ? imdbId : `tt${imdbId}`;
-  return `https://111movies.com/tv/${formattedId}/${season}/${episode}`;
+  return `https://111movies.com/tv/${formattedId}//${season}/${episode}`;
 };
 
 // RiveStream API integration with IMDB IDs
