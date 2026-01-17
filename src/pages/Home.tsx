@@ -306,7 +306,7 @@ const Home: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <span>NEW</span> V2.0 Premium Player
+          <span>NEW</span> Use Ad-Blocker or Brave Browser
         </Badge>
 
         <Title>
