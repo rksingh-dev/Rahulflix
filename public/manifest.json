@@ -1,0 +1,16 @@
+{
+  "short_name": "RahulFlix",
+  "name": "RahulFlix - Movie Streaming",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "64x64",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#000000",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#e50914"
+}

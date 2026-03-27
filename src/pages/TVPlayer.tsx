@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { FaArrowLeft, FaChevronLeft, FaChevronRight, FaTv } from 'react-icons/fa';
 import { getStreamUrl, ServerType } from '../services/api';
+import { injectAdBlocker } from '../utils/adBlocker';
 
 const PlayerContainer = styled.div`
   min-height: 100vh;
@@ -122,6 +123,7 @@ const VideoFrame = styled.iframe`
   height: 100%;
   border: none;
   background: #000;
+  display: block;
 `;
 
 const LoadingContainer = styled.div`
@@ -196,7 +198,8 @@ const TVPlayer: React.FC = () => {
   }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const server = (location.state as { server: ServerType })?.server || '111movies';
+  const server = (location.state as { server: ServerType })?.server || 'rivestream';
+  const videoFrameRef = useRef<HTMLIFrameElement>(null);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -204,6 +207,18 @@ const TVPlayer: React.FC = () => {
 
   const seasonNum = parseInt(season || '1');
   const episodeNum = parseInt(episode || '1');
+
+  // Ad blocker injection
+  useEffect(() => {
+    if (videoFrameRef.current && streamUrl) {
+      const timer = setTimeout(() => {
+        if (videoFrameRef.current) {
+          injectAdBlocker(videoFrameRef.current);
+        }
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [streamUrl]);
 
   useEffect(() => {
     const loadStream = () => {
@@ -317,10 +332,17 @@ const TVPlayer: React.FC = () => {
 
       <VideoContainer>
         <VideoFrame
+          ref={videoFrameRef}
           src={streamUrl}
           title={`TV Show: ${formattedId} - S${seasonNum}E${episodeNum}`}
           allowFullScreen
+          sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-presentation"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          onLoad={() => {
+            if (videoFrameRef.current) {
+              injectAdBlocker(videoFrameRef.current);
+            }
+          }}
         />
       </VideoContainer>
 

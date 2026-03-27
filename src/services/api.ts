@@ -1,4 +1,8 @@
 // 111movies API integration with IMDB IDs
+export const TMDB_API_KEY = '7a337bb13c46fcdccf8dcbf450733263';
+export const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
+export const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
+
 export const getMovieStreamUrl = (imdbId: string): string => {
   // Ensure IMDB ID format (add 'tt' prefix if not present)
   const formattedId = imdbId.startsWith('tt') ? imdbId : `tt${imdbId}`;

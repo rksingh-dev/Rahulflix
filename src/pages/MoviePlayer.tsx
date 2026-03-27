@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { FaArrowLeft } from 'react-icons/fa';
 import { getStreamUrl, ServerType } from '../services/api';
+import { injectAdBlocker } from '../utils/adBlocker';
 
 const PlayerContainer = styled.div`
   min-height: 100vh;
@@ -48,6 +49,7 @@ const VideoFrame = styled.iframe`
   height: 100%;
   border: none;
   background: #000;
+  display: block;
 `;
 
 const LoadingContainer = styled.div`
@@ -140,12 +142,25 @@ const MovieId = styled.p`
 const MoviePlayer: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
-  const server = (location.state as { server: ServerType })?.server || '111movies';
+  const server = (location.state as { server: ServerType })?.server || 'rivestream';
+  const videoFrameRef = useRef<HTMLIFrameElement>(null);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [streamUrl, setStreamUrl] = useState<string>('');
   const [showMovieInfo, setShowMovieInfo] = useState(true);
+
+  // Ad blocker injection
+  useEffect(() => {
+    if (videoFrameRef.current && streamUrl) {
+      const timer = setTimeout(() => {
+        if (videoFrameRef.current) {
+          injectAdBlocker(videoFrameRef.current);
+        }
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [streamUrl]);
 
   useEffect(() => {
     const loadStream = () => {
@@ -236,10 +251,17 @@ const MoviePlayer: React.FC = () => {
 
       <VideoContainer>
         <VideoFrame
+          ref={videoFrameRef}
           src={streamUrl}
           title={`Movie: ${formattedId}`}
           allowFullScreen
+          sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-presentation"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          onLoad={() => {
+            if (videoFrameRef.current) {
+              injectAdBlocker(videoFrameRef.current);
+            }
+          }}
         />
       </VideoContainer>
 

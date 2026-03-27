@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, BrowserRouter } from 'react-router-dom';
 import styled from 'styled-components';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
@@ -13,7 +13,7 @@ const AppContainer = styled.div`
   color: #fff;
 `;
 
-function App() {
+function AppContent() {
   const location = useLocation();
   const hideNavbar = location.pathname.startsWith('/watch/') ||
                      (location.pathname.includes('/tv/') && location.pathname.includes('/watch/'));
@@ -28,6 +28,14 @@ function App() {
         <Route path="/tv/:id/watch/:season/:episode" element={<TVPlayer />} />
       </Routes>
     </AppContainer>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+      <AppContent />
+    </BrowserRouter>
   );
 }
 
