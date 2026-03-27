@@ -466,24 +466,24 @@ const Navbar: React.FC = () => {
                 {pendingResult.title || pendingResult.name}
               </ModalSubText>
               <BraveWarning>
-                💡 For best experience with Server 2 (111movies), use Brave Browser
+                💡 For best experience with Server 1 (111movies), use Brave Browser
               </BraveWarning>
               <ServerOptions>
-                <ServerOption
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => handleServerSelect('rivestream')}
-                  disabled={isLoadingServerOptions}
-                >
-                  <FaTv color="#e50914" /> Server 1 (Default)
-                </ServerOption>
                 <ServerOption
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleServerSelect('111movies')}
                   disabled={isLoadingServerOptions}
                 >
-                  <FaPlay color="#e50914" /> Server 2
+                  <FaPlay color="#e50914" /> Server 1 (Default)
+                </ServerOption>
+                <ServerOption
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => handleServerSelect('rivestream')}
+                  disabled={isLoadingServerOptions}
+                >
+                  <FaTv color="#e50914" /> Server 2
                 </ServerOption>
               </ServerOptions>
             </Modal>
