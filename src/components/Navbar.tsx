@@ -465,9 +465,6 @@ const Navbar: React.FC = () => {
               <ModalSubText>
                 {pendingResult.title || pendingResult.name}
               </ModalSubText>
-              <BraveWarning>
-                💡 For best experience with Server 1 (111movies), use Brave Browser
-              </BraveWarning>
               <ServerOptions>
                 <ServerOption
                   whileHover={{ scale: 1.01 }}

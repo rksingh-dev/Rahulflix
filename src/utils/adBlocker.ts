@@ -67,6 +67,5 @@ export const addAdBlockerNotification = () => {
     For the best ad-free experience, we recommend:
     • Installing uBlock Origin browser extension
     • Enabling your browser's ad blocker
-    • Using Brave browser with built-in ad blocking
   `;
 };
