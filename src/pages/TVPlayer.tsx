@@ -198,7 +198,7 @@ const TVPlayer: React.FC = () => {
   }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const server = (location.state as { server: ServerType })?.server || 'rivestream';
+  const server = (location.state as { server: ServerType })?.server || '111movies';
   const videoFrameRef = useRef<HTMLIFrameElement>(null);
 
   const [loading, setLoading] = useState(true);
