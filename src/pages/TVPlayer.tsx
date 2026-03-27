@@ -331,19 +331,34 @@ const TVPlayer: React.FC = () => {
       </EpisodeControls>
 
       <VideoContainer>
-        <VideoFrame
-          ref={videoFrameRef}
-          src={streamUrl}
-          title={`TV Show: ${formattedId} - S${seasonNum}E${episodeNum}`}
-          allowFullScreen
-          sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-presentation"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          onLoad={() => {
-            if (videoFrameRef.current) {
-              injectAdBlocker(videoFrameRef.current);
-            }
-          }}
-        />
+        {server === 'rivestream' ? (
+          <VideoFrame
+            ref={videoFrameRef}
+            src={streamUrl}
+            title={`TV Show: ${formattedId} - S${seasonNum}E${episodeNum}`}
+            allowFullScreen
+            sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-presentation"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            onLoad={() => {
+              if (videoFrameRef.current) {
+                injectAdBlocker(videoFrameRef.current);
+              }
+            }}
+          />
+        ) : (
+          <VideoFrame
+            ref={videoFrameRef}
+            src={streamUrl}
+            title={`TV Show: ${formattedId} - S${seasonNum}E${episodeNum}`}
+            allowFullScreen
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            onLoad={() => {
+              if (videoFrameRef.current) {
+                injectAdBlocker(videoFrameRef.current);
+              }
+            }}
+          />
+        )}
       </VideoContainer>
 
       <EpisodeInfo>

@@ -250,19 +250,34 @@ const MoviePlayer: React.FC = () => {
       </BackButton>
 
       <VideoContainer>
-        <VideoFrame
-          ref={videoFrameRef}
-          src={streamUrl}
-          title={`Movie: ${formattedId}`}
-          allowFullScreen
-          sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-presentation"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          onLoad={() => {
-            if (videoFrameRef.current) {
-              injectAdBlocker(videoFrameRef.current);
-            }
-          }}
-        />
+        {server === 'rivestream' ? (
+          <VideoFrame
+            ref={videoFrameRef}
+            src={streamUrl}
+            title={`Movie: ${formattedId}`}
+            allowFullScreen
+            sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-presentation"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            onLoad={() => {
+              if (videoFrameRef.current) {
+                injectAdBlocker(videoFrameRef.current);
+              }
+            }}
+          />
+        ) : (
+          <VideoFrame
+            ref={videoFrameRef}
+            src={streamUrl}
+            title={`Movie: ${formattedId}`}
+            allowFullScreen
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            onLoad={() => {
+              if (videoFrameRef.current) {
+                injectAdBlocker(videoFrameRef.current);
+              }
+            }}
+          />
+        )}
       </VideoContainer>
 
       {showMovieInfo && (
