@@ -229,16 +229,6 @@ const ModalSubText = styled.p`
   font-size: 0.9rem;
 `;
 
-const BraveWarning = styled.p`
-  margin: 0.5rem 0 1.5rem 0;
-  padding: 0.75rem;
-  background: rgba(229, 9, 20, 0.1);
-  border-left: 3px solid #e50914;
-  color: #ffa07a;
-  font-size: 0.85rem;
-  border-radius: 4px;
-`;
-
 const ServerOptions = styled.div`
   display: flex;
   flex-direction: column;
