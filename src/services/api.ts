@@ -36,7 +36,7 @@ export const getStreamUrl = (
   type: 'movie' | 'tv',
   season?: number,
   episode?: number,
-  server: ServerType = '111movies'
+  server: ServerType = 'rivestream'
 ): string => {
   if (server === 'rivestream') {
     if (type === 'movie') {
@@ -48,7 +48,7 @@ export const getStreamUrl = (
       return getRiveStreamTVUrl(id, season, episode);
     }
   } else {
-    // Default to 111movies
+    // 111movies
     if (type === 'movie') {
       return getMovieStreamUrl(id);
     } else {

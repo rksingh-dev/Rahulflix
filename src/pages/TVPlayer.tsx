@@ -357,7 +357,6 @@ const TVPlayer: React.FC = () => {
 
         <EpisodeMeta>
           <span>IMDB ID: {formattedId}</span>
-          <span>Server: {server === '111movies' ? '111Movies' : 'RiveStream'}</span>
         </EpisodeMeta>
       </EpisodeInfo>
     </PlayerContainer>
