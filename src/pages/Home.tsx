@@ -234,67 +234,6 @@ const ServerOption = styled(motion.button)`
   }
 `;
 
-const IframeOverlay = styled(motion.div)`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.95);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1100;
-  padding: 1rem;
-`;
-
-const IframeWrapper = styled.div`
-  width: 100%;
-  max-width: 1280px;
-  height: min(90vh, 820px);
-  background: #000;
-  border-radius: 14px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  display: flex;
-  flex-direction: column;
-`;
-
-const IframeHeader = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.8rem 1rem;
-  background: #141414;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-`;
-
-const IframeTitle = styled.span`
-  color: #fff;
-  font-weight: 600;
-`;
-
-const CloseIframeButton = styled.button`
-  background: rgba(255, 255, 255, 0.14);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 8px;
-  padding: 0.35rem 0.7rem;
-  cursor: pointer;
-
-  &:hover {
-    background: rgba(229, 9, 20, 0.8);
-    border-color: #e50914;
-  }
-`;
-
-const StreamIframe = styled.iframe`
-  flex: 1;
-  width: 100%;
-  border: none;
-  background: #000;
-`;
-
 interface TMDBMovie {
   id: number;
   title?: string;
@@ -313,9 +252,6 @@ const Home: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [showServerSelection, setShowServerSelection] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState<{ id: number; type: "movie" | "tv" } | null>(null);
-  const [iframeUrl, setIframeUrl] = useState("");
-  const [showIframe, setShowIframe] = useState(false);
-  const [iframeTitle, setIframeTitle] = useState("");
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -489,29 +425,6 @@ const Home: React.FC = () => {
               </button>
             </Modal>
           </Overlay>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {showIframe && (
-          <IframeOverlay
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <IframeWrapper>
-              <IframeHeader>
-                <IframeTitle>{iframeTitle}</IframeTitle>
-                <CloseIframeButton onClick={() => setShowIframe(false)}>Close</CloseIframeButton>
-              </IframeHeader>
-              <StreamIframe
-                src={iframeUrl}
-                title={iframeTitle}
-                allowFullScreen
-                sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation"
-              />
-            </IframeWrapper>
-          </IframeOverlay>
         )}
       </AnimatePresence>
     </MainContainer>
