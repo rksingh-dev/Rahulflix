@@ -204,6 +204,7 @@ const TVPlayer: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [streamUrl, setStreamUrl] = useState<string>('');
+  const [showEpisodeInfo, setShowEpisodeInfo] = useState(true);
 
   const seasonNum = parseInt(season || '1');
   const episodeNum = parseInt(episode || '1');
@@ -246,6 +247,17 @@ const TVPlayer: React.FC = () => {
 
     loadStream();
   }, [id, season, episode, seasonNum, episodeNum, server]);
+
+  // Auto-hide episode info after 2 seconds.
+  useEffect(() => {
+    setShowEpisodeInfo(true);
+
+    const timer = setTimeout(() => {
+      setShowEpisodeInfo(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [id, season, episode]);
 
   const handlePreviousEpisode = () => {
     if (episodeNum > 1) {
@@ -361,19 +373,21 @@ const TVPlayer: React.FC = () => {
         )}
       </VideoContainer>
 
-      <EpisodeInfo>
-        <ShowTitle>
-          <FaTv size={16} />
-          TV Show Player
-        </ShowTitle>
-        <EpisodeTitle>
-          S{seasonNum}E{episodeNum}
-        </EpisodeTitle>
+      {showEpisodeInfo && (
+        <EpisodeInfo>
+          <ShowTitle>
+            <FaTv size={16} />
+            TV Show Player
+          </ShowTitle>
+          <EpisodeTitle>
+            S{seasonNum}E{episodeNum}
+          </EpisodeTitle>
 
-        <EpisodeMeta>
-          <span>IMDB ID: {formattedId}</span>
-        </EpisodeMeta>
-      </EpisodeInfo>
+          <EpisodeMeta>
+            <span>IMDB ID: {formattedId}</span>
+          </EpisodeMeta>
+        </EpisodeInfo>
+      )}
     </PlayerContainer>
   );
 };
