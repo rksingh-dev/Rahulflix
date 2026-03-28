@@ -462,7 +462,7 @@ const Navbar: React.FC = () => {
                   onClick={() => handleServerSelect('111movies')}
                   disabled={isLoadingServerOptions}
                 >
-                  <FaPlay color="#e50914" /> Server 1 (111movies)
+                  <FaPlay color="#e50914" /> Server 1
                 </ServerOption>
                 <ServerOption
                   whileHover={{ scale: 1.01 }}
@@ -470,7 +470,7 @@ const Navbar: React.FC = () => {
                   onClick={() => handleServerSelect('rivestream')}
                   disabled={isLoadingServerOptions}
                 >
-                  <FaTv color="#e50914" /> Server 2 (rivestream)
+                  <FaTv color="#e50914" /> Server 2
                 </ServerOption>
                 <ServerOption
                   whileHover={{ scale: 1.01 }}
@@ -478,7 +478,7 @@ const Navbar: React.FC = () => {
                   onClick={() => handleServerSelect('streamingnow')}
                   disabled={isLoadingServerOptions}
                 >
-                  <FaFilm color="#e50914" /> Server 3 (streamingnow)
+                  <FaFilm color="#e50914" /> Server 3
                 </ServerOption>
               </ServerOptions>
             </Modal>
