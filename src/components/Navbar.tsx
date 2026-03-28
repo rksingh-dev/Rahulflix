@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaUser, FaSearch, FaPlay, FaTv, FaFilm } from 'react-icons/fa';
@@ -253,6 +253,69 @@ const ServerOption = styled(motion.button)`
   }
 `;
 
+const IframeContainer = styled(motion.div)`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10030;
+`;
+
+const IframeWrapper = styled.div`
+  position: relative;
+  width: 95%;
+  height: 95%;
+  background: #000;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+`;
+
+const IframeHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: #181818;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+`;
+
+const IframeTitle = styled.h3`
+  margin: 0;
+  color: #fff;
+  font-size: 1rem;
+`;
+
+const CloseButton = styled.button`
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(229, 9, 20, 0.8);
+    border-color: #e50914;
+  }
+`;
+
+const IframeElement = styled.iframe`
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: #000;
+`;
+
 interface SearchResult {
   id: number;
   title?: string;
@@ -264,6 +327,7 @@ interface SearchResult {
 }
 
 const Navbar: React.FC = () => {
+  const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
@@ -273,6 +337,9 @@ const Navbar: React.FC = () => {
   const [pendingResult, setPendingResult] = useState<SearchResult | null>(null);
   const [pendingImdbId, setPendingImdbId] = useState<string | null>(null);
   const [isLoadingServerOptions, setIsLoadingServerOptions] = useState(false);
+  const [showIframe, setShowIframe] = useState(false);
+  const [iframeUrl, setIframeUrl] = useState<string>('');
+  const [iframeTitle, setIframeTitle] = useState<string>('');
   const searchTimeoutRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
@@ -355,7 +422,16 @@ const Navbar: React.FC = () => {
         ? getStreamUrl(pendingImdbId, 'movie', undefined, undefined, server)
         : getStreamUrl(pendingImdbId, 'tv', 1, 1, server);
 
-    window.open(streamUrl, '_blank', 'noopener,noreferrer');
+    // Server 3 opens in new tab, Server 1 and 2 use internal player routes
+    if (server === 'streamingnow') {
+      window.open(streamUrl, '_blank', 'noopener,noreferrer');
+    } else {
+      if (pendingResult.media_type === 'movie') {
+        navigate(`/watch/${pendingImdbId}`, { state: { server } });
+      } else {
+        navigate(`/tv/${pendingImdbId}/watch/1/1`, { state: { server } });
+      }
+    }
 
     setSearchQuery('');
     setSearchResults([]);
@@ -483,6 +559,29 @@ const Navbar: React.FC = () => {
               </ServerOptions>
             </Modal>
           </Overlay>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showIframe && (
+          <IframeContainer
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <IframeWrapper>
+              <IframeHeader>
+                <IframeTitle>{iframeTitle}</IframeTitle>
+                <CloseButton onClick={() => setShowIframe(false)}>Close</CloseButton>
+              </IframeHeader>
+              <IframeElement
+                src={iframeUrl}
+                title={iframeTitle}
+                allowFullScreen
+                sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation"
+              />
+            </IframeWrapper>
+          </IframeContainer>
         )}
       </AnimatePresence>
     </Nav>
