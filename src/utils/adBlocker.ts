@@ -58,7 +58,11 @@ export const injectAdBlocker = (frameElement: HTMLIFrameElement) => {
       attributeFilter: ['class', 'id', 'style'],
     });
   } catch (error) {
-    console.warn('Ad blocker injection failed (expected for cross-origin iframes):', error);
+    // Cross-origin iframes cannot be accessed by browser security policy.
+    if (error instanceof DOMException && error.name === 'SecurityError') {
+      return;
+    }
+    console.warn('Ad blocker injection failed:', error);
   }
 };
 

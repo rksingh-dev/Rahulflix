@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaPlay, FaTv, FaStar, FaFilm } from "react-icons/fa";
-import { TMDB_API_KEY, TMDB_BASE_URL, TMDB_IMAGE_BASE_URL } from "../services/api";
+import { TMDB_API_KEY, TMDB_BASE_URL, TMDB_IMAGE_BASE_URL, ServerType, getStreamUrl } from "../services/api";
 
 const MainContainer = styled.div`
   min-height: 100vh;
@@ -251,7 +250,6 @@ const Home: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [showServerSelection, setShowServerSelection] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState<{ id: number; type: "movie" | "tv" } | null>(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -278,7 +276,7 @@ const Home: React.FC = () => {
     setShowServerSelection(true);
   };
 
-  const handleServerSelect = async (server: "111movies" | "rivestream") => {
+  const handleServerSelect = async (server: ServerType) => {
     if (!selectedMovie) return;
     
     try {
@@ -293,13 +291,13 @@ const Home: React.FC = () => {
         return;
       }
 
-      const cleanId = imdbId.replace(/^tt/, "");
+      const streamUrl =
+        selectedMovie.type === "movie"
+          ? getStreamUrl(imdbId, "movie", undefined, undefined, server)
+          : getStreamUrl(imdbId, "tv", 1, 1, server);
 
-      if (selectedMovie.type === "movie") {
-        navigate(`/watch/${cleanId}`, { state: { server } });
-      } else {
-        navigate(`/tv/${cleanId}/watch/1/1`, { state: { server } });
-      }
+      window.open(streamUrl, "_blank", "noopener,noreferrer");
+      setShowServerSelection(false);
     } catch (err) {
       console.error(err);
       alert("Error finding stream.");
@@ -381,16 +379,23 @@ const Home: React.FC = () => {
                 <ServerOption
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={() => handleServerSelect("rivestream")}
+                  onClick={() => handleServerSelect("111movies")}
                 >
-                  <FaTv color="#e50914" /> Server 1 (Default)
+                  <FaPlay color="#e50914" /> Server 1 (111movies)
                 </ServerOption>
                 <ServerOption
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={() => handleServerSelect("111movies")}
+                  onClick={() => handleServerSelect("rivestream")}
                 >
-                  <FaPlay color="#e50914" /> Server 2
+                  <FaTv color="#e50914" /> Server 2 (rivestream)
+                </ServerOption>
+                <ServerOption
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => handleServerSelect("streamingnow")}
+                >
+                  <FaFilm color="#e50914" /> Server 3 (streamingnow)
                 </ServerOption>
               </ServerOptions>
               

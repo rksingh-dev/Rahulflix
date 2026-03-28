@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
@@ -198,28 +198,41 @@ const TVPlayer: React.FC = () => {
   }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const server = (location.state as { server: ServerType })?.server || '111movies';
+  const requestedServer = (location.state as { server: ServerType })?.server || '111movies';
   const videoFrameRef = useRef<HTMLIFrameElement>(null);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [streamUrl, setStreamUrl] = useState<string>('');
   const [showEpisodeInfo, setShowEpisodeInfo] = useState(true);
+  const [activeServer, setActiveServer] = useState<ServerType>(requestedServer);
+  const [frameLoaded, setFrameLoaded] = useState(false);
+  const [fallbackNote, setFallbackNote] = useState<string | null>(null);
 
   const seasonNum = parseInt(season || '1');
   const episodeNum = parseInt(episode || '1');
 
-  // Ad blocker injection
-  useEffect(() => {
-    if (videoFrameRef.current && streamUrl) {
-      const timer = setTimeout(() => {
-        if (videoFrameRef.current) {
-          injectAdBlocker(videoFrameRef.current);
-        }
-      }, 1000);
-      return () => clearTimeout(timer);
+  const getFallbackServer = (server: ServerType): ServerType | null => {
+    if (server === 'streamingnow') return 'rivestream';
+    if (server === 'rivestream') return '111movies';
+    return null;
+  };
+
+  const handleFrameFailure = useCallback(() => {
+    const nextServer = getFallbackServer(activeServer);
+    if (nextServer) {
+      setFallbackNote(`Server blocked (${activeServer}), switched to ${nextServer}.`);
+      setActiveServer(nextServer);
+      return;
     }
-  }, [streamUrl]);
+
+    setError('This stream server refused to load in an iframe. Please try another title or server.');
+  }, [activeServer]);
+
+  useEffect(() => {
+    setActiveServer(requestedServer);
+    setFallbackNote(null);
+  }, [requestedServer, id, season, episode]);
 
   useEffect(() => {
     const loadStream = () => {
@@ -232,9 +245,10 @@ const TVPlayer: React.FC = () => {
       try {
         setLoading(true);
         setError(null);
+        setFrameLoaded(false);
 
         // Generate stream URL using selected server
-        const streamUrl = getStreamUrl(id, 'tv', seasonNum, episodeNum, server);
+        const streamUrl = getStreamUrl(id, 'tv', seasonNum, episodeNum, activeServer);
         setStreamUrl(streamUrl);
 
         setLoading(false);
@@ -246,7 +260,20 @@ const TVPlayer: React.FC = () => {
     };
 
     loadStream();
-  }, [id, season, episode, seasonNum, episodeNum, server]);
+  }, [id, season, episode, seasonNum, episodeNum, activeServer]);
+
+  useEffect(() => {
+    if (!streamUrl) return;
+
+    const timeoutMs = activeServer === 'streamingnow' ? 2500 : 12000;
+    const timer = setTimeout(() => {
+      if (!frameLoaded) {
+        handleFrameFailure();
+      }
+    }, timeoutMs);
+
+    return () => clearTimeout(timer);
+  }, [streamUrl, frameLoaded, activeServer, handleFrameFailure]);
 
   // Auto-hide episode info after 2 seconds.
   useEffect(() => {
@@ -261,16 +288,16 @@ const TVPlayer: React.FC = () => {
 
   const handlePreviousEpisode = () => {
     if (episodeNum > 1) {
-      navigate(`/tv/${id}/watch/${seasonNum}/${episodeNum - 1}`, { state: { server } });
+      navigate(`/tv/${id}/watch/${seasonNum}/${episodeNum - 1}`, { state: { server: activeServer } });
     } else if (seasonNum > 1) {
       // Go to last episode of previous season (assuming 20 episodes max per season)
-      navigate(`/tv/${id}/watch/${seasonNum - 1}/20`, { state: { server } });
+      navigate(`/tv/${id}/watch/${seasonNum - 1}/20`, { state: { server: activeServer } });
     }
   };
 
   const handleNextEpisode = () => {
     // Go to next episode (assuming unlimited episodes for simplicity)
-    navigate(`/tv/${id}/watch/${seasonNum}/${episodeNum + 1}`, { state: { server } });
+    navigate(`/tv/${id}/watch/${seasonNum}/${episodeNum + 1}`, { state: { server: activeServer } });
   };
 
   const canGoPrevious = () => {
@@ -343,15 +370,18 @@ const TVPlayer: React.FC = () => {
       </EpisodeControls>
 
       <VideoContainer>
-        {server === 'rivestream' ? (
+        {activeServer === 'rivestream' ? (
           <VideoFrame
+            key={`${activeServer}-${streamUrl}`}
             ref={videoFrameRef}
             src={streamUrl}
             title={`TV Show: ${formattedId} - S${seasonNum}E${episodeNum}`}
             allowFullScreen
             sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-presentation"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            onError={handleFrameFailure}
             onLoad={() => {
+              setFrameLoaded(true);
               if (videoFrameRef.current) {
                 injectAdBlocker(videoFrameRef.current);
               }
@@ -359,12 +389,15 @@ const TVPlayer: React.FC = () => {
           />
         ) : (
           <VideoFrame
+            key={`${activeServer}-${streamUrl}`}
             ref={videoFrameRef}
             src={streamUrl}
             title={`TV Show: ${formattedId} - S${seasonNum}E${episodeNum}`}
             allowFullScreen
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            onError={handleFrameFailure}
             onLoad={() => {
+              setFrameLoaded(true);
               if (videoFrameRef.current) {
                 injectAdBlocker(videoFrameRef.current);
               }
@@ -386,6 +419,7 @@ const TVPlayer: React.FC = () => {
           <EpisodeMeta>
             <span>IMDB ID: {formattedId}</span>
           </EpisodeMeta>
+          {fallbackNote && <EpisodeMeta><span>{fallbackNote}</span></EpisodeMeta>}
         </EpisodeInfo>
       )}
     </PlayerContainer>

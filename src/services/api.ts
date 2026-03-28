@@ -28,7 +28,20 @@ export const getRiveStreamTVUrl = (imdbId: string, season: number, episode: numb
   return `https://rivestream.net/embed?type=tv&id=${formattedId}&season=${season}&episode=${episode}`;
 };
 
-export type ServerType = '111movies' | 'rivestream';
+// StreamingNow integration with IMDB IDs
+export const getStreamingNowMovieUrl = (imdbId: string): string => {
+  // Ensure IMDB ID format (add 'tt' prefix if not present)
+  const formattedId = imdbId.startsWith('tt') ? imdbId : `tt${imdbId}`;
+  return `https://multiembed.mov/directstream.php?video_id=${formattedId}`;
+};
+
+export const getStreamingNowTVUrl = (imdbId: string, season: number, episode: number): string => {
+  // Ensure IMDB ID format (add 'tt' prefix if not present)
+  const formattedId = imdbId.startsWith('tt') ? imdbId : `tt${imdbId}`;
+  return `https://multiembed.mov/directstream.php?video_id=${formattedId}&season=${season}&episode=${episode}`;
+};
+
+export type ServerType = '111movies' | 'rivestream' | 'streamingnow';
 
 // Helper function to get stream URL based on content type and server
 export const getStreamUrl = (
@@ -46,6 +59,15 @@ export const getStreamUrl = (
         throw new Error('Season and episode are required for TV shows');
       }
       return getRiveStreamTVUrl(id, season, episode);
+    }
+  } else if (server === 'streamingnow') {
+    if (type === 'movie') {
+      return getStreamingNowMovieUrl(id);
+    } else {
+      if (season === undefined || episode === undefined) {
+        throw new Error('Season and episode are required for TV shows');
+      }
+      return getStreamingNowTVUrl(id, season, episode);
     }
   } else {
     // 111movies

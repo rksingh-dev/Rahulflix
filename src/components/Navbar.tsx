@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaUser, FaSearch, FaPlay, FaTv } from 'react-icons/fa';
-import { TMDB_API_KEY, TMDB_BASE_URL, TMDB_IMAGE_BASE_URL, ServerType } from '../services/api';
+import { FaUser, FaSearch, FaPlay, FaTv, FaFilm } from 'react-icons/fa';
+import { TMDB_API_KEY, TMDB_BASE_URL, TMDB_IMAGE_BASE_URL, ServerType, getStreamUrl } from '../services/api';
 
 const Nav = styled(motion.nav).withConfig({
   shouldForwardProp: (prop: PropertyKey) => prop !== 'scrolled',
@@ -274,7 +274,6 @@ const Navbar: React.FC = () => {
   const [pendingImdbId, setPendingImdbId] = useState<string | null>(null);
   const [isLoadingServerOptions, setIsLoadingServerOptions] = useState(false);
   const searchTimeoutRef = useRef<NodeJS.Timeout>();
-  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -351,11 +350,12 @@ const Navbar: React.FC = () => {
   const handleServerSelect = (server: ServerType) => {
     if (!pendingResult || !pendingImdbId) return;
 
-    if (pendingResult.media_type === 'movie') {
-      navigate(`/watch/${pendingImdbId}`, { state: { server } });
-    } else {
-      navigate(`/tv/${pendingImdbId}/watch/1/1`, { state: { server } });
-    }
+    const streamUrl =
+      pendingResult.media_type === 'movie'
+        ? getStreamUrl(pendingImdbId, 'movie', undefined, undefined, server)
+        : getStreamUrl(pendingImdbId, 'tv', 1, 1, server);
+
+    window.open(streamUrl, '_blank', 'noopener,noreferrer');
 
     setSearchQuery('');
     setSearchResults([]);
@@ -462,7 +462,7 @@ const Navbar: React.FC = () => {
                   onClick={() => handleServerSelect('111movies')}
                   disabled={isLoadingServerOptions}
                 >
-                  <FaPlay color="#e50914" /> Server 1 (Default)
+                  <FaPlay color="#e50914" /> Server 1 (111movies)
                 </ServerOption>
                 <ServerOption
                   whileHover={{ scale: 1.01 }}
@@ -470,7 +470,15 @@ const Navbar: React.FC = () => {
                   onClick={() => handleServerSelect('rivestream')}
                   disabled={isLoadingServerOptions}
                 >
-                  <FaTv color="#e50914" /> Server 2
+                  <FaTv color="#e50914" /> Server 2 (rivestream)
+                </ServerOption>
+                <ServerOption
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => handleServerSelect('streamingnow')}
+                  disabled={isLoadingServerOptions}
+                >
+                  <FaFilm color="#e50914" /> Server 3 (streamingnow)
                 </ServerOption>
               </ServerOptions>
             </Modal>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
@@ -142,25 +142,38 @@ const MovieId = styled.p`
 const MoviePlayer: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
-  const server = (location.state as { server: ServerType })?.server || '111movies';
+  const requestedServer = (location.state as { server: ServerType })?.server || '111movies';
   const videoFrameRef = useRef<HTMLIFrameElement>(null);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [streamUrl, setStreamUrl] = useState<string>('');
   const [showMovieInfo, setShowMovieInfo] = useState(true);
+  const [activeServer, setActiveServer] = useState<ServerType>(requestedServer);
+  const [frameLoaded, setFrameLoaded] = useState(false);
+  const [fallbackNote, setFallbackNote] = useState<string | null>(null);
 
-  // Ad blocker injection
-  useEffect(() => {
-    if (videoFrameRef.current && streamUrl) {
-      const timer = setTimeout(() => {
-        if (videoFrameRef.current) {
-          injectAdBlocker(videoFrameRef.current);
-        }
-      }, 1000);
-      return () => clearTimeout(timer);
+  const getFallbackServer = (server: ServerType): ServerType | null => {
+    if (server === 'streamingnow') return 'rivestream';
+    if (server === 'rivestream') return '111movies';
+    return null;
+  };
+
+  const handleFrameFailure = useCallback(() => {
+    const nextServer = getFallbackServer(activeServer);
+    if (nextServer) {
+      setFallbackNote(`Server blocked (${activeServer}), switched to ${nextServer}.`);
+      setActiveServer(nextServer);
+      return;
     }
-  }, [streamUrl]);
+
+    setError('This stream server refused to load in an iframe. Please try another title or server.');
+  }, [activeServer]);
+
+  useEffect(() => {
+    setActiveServer(requestedServer);
+    setFallbackNote(null);
+  }, [requestedServer, id]);
 
   useEffect(() => {
     const loadStream = () => {
@@ -173,9 +186,10 @@ const MoviePlayer: React.FC = () => {
       try {
         setLoading(true);
         setError(null);
+        setFrameLoaded(false);
 
         // Generate stream URL using selected server
-        const streamUrl = getStreamUrl(id, 'movie', undefined, undefined, server);
+        const streamUrl = getStreamUrl(id, 'movie', undefined, undefined, activeServer);
         setStreamUrl(streamUrl);
 
         setLoading(false);
@@ -187,7 +201,20 @@ const MoviePlayer: React.FC = () => {
     };
 
     loadStream();
-  }, [id, server]);
+  }, [id, activeServer]);
+
+  useEffect(() => {
+    if (!streamUrl) return;
+
+    const timeoutMs = activeServer === 'streamingnow' ? 2500 : 12000;
+    const timer = setTimeout(() => {
+      if (!frameLoaded) {
+        handleFrameFailure();
+      }
+    }, timeoutMs);
+
+    return () => clearTimeout(timer);
+  }, [streamUrl, frameLoaded, activeServer, handleFrameFailure]);
 
   // Auto-hide movie info after 2 seconds
   useEffect(() => {
@@ -250,15 +277,18 @@ const MoviePlayer: React.FC = () => {
       </BackButton>
 
       <VideoContainer>
-        {server === 'rivestream' ? (
+        {activeServer === 'rivestream' ? (
           <VideoFrame
+            key={`${activeServer}-${streamUrl}`}
             ref={videoFrameRef}
             src={streamUrl}
             title={`Movie: ${formattedId}`}
             allowFullScreen
             sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-presentation"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            onError={handleFrameFailure}
             onLoad={() => {
+              setFrameLoaded(true);
               if (videoFrameRef.current) {
                 injectAdBlocker(videoFrameRef.current);
               }
@@ -266,12 +296,15 @@ const MoviePlayer: React.FC = () => {
           />
         ) : (
           <VideoFrame
+            key={`${activeServer}-${streamUrl}`}
             ref={videoFrameRef}
             src={streamUrl}
             title={`Movie: ${formattedId}`}
             allowFullScreen
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            onError={handleFrameFailure}
             onLoad={() => {
+              setFrameLoaded(true);
               if (videoFrameRef.current) {
                 injectAdBlocker(videoFrameRef.current);
               }
@@ -284,6 +317,7 @@ const MoviePlayer: React.FC = () => {
         <MovieInfo>
           <MovieTitle>Movie Player</MovieTitle>
           <MovieId>IMDB ID: {formattedId}</MovieId>
+          {fallbackNote && <MovieId>{fallbackNote}</MovieId>}
         </MovieInfo>
       )}
     </PlayerContainer>
