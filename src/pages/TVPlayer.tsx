@@ -213,8 +213,10 @@ const TVPlayer: React.FC = () => {
   const episodeNum = parseInt(episode || '1');
 
   const getFallbackServer = (server: ServerType): ServerType | null => {
-    if (server === 'streamingnow') return 'rivestream';
+    if (server === 'streamingnow') return '111movies';
     if (server === 'rivestream') return '111movies';
+    if (server === 'vidbinge') return '111movies';
+    if (server === 'vembed') return '111movies';
     return null;
   };
 

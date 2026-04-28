@@ -298,7 +298,7 @@ const Home: React.FC = () => {
           ? getStreamUrl(imdbId, "movie", undefined, undefined, server)
           : getStreamUrl(imdbId, "tv", 1, 1, server);
 
-      if (server === "streamingnow") {
+      if (server === "rivestream") {
         window.open(streamUrl, "_blank", "noopener,noreferrer");
       } else {
         const cleanImdbId = imdbId.replace(/^tt/, "");
@@ -407,6 +407,20 @@ const Home: React.FC = () => {
                   onClick={() => handleServerSelect("streamingnow")}
                 >
                   <FaFilm color="#e50914" /> Server 3
+                </ServerOption>
+                <ServerOption
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => handleServerSelect("vidbinge")}
+                >
+                  <FaFilm color="#e50914" /> Server 4
+                </ServerOption>
+                <ServerOption
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => handleServerSelect("vembed")}
+                >
+                  <FaFilm color="#e50914" /> Server 5
                 </ServerOption>
               </ServerOptions>
               

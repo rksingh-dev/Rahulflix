@@ -356,8 +356,7 @@ const Navbar: React.FC = () => {
         ? getStreamUrl(pendingImdbId, 'movie', undefined, undefined, server)
         : getStreamUrl(pendingImdbId, 'tv', 1, 1, server);
 
-    // Server 3 opens in new tab, Server 1 and 2 use internal player routes
-    if (server === 'streamingnow') {
+    if (server === 'rivestream') {
       window.open(streamUrl, '_blank', 'noopener,noreferrer');
     } else {
       if (pendingResult.media_type === 'movie') {
@@ -489,6 +488,22 @@ const Navbar: React.FC = () => {
                   disabled={isLoadingServerOptions}
                 >
                   <FaFilm color="#e50914" /> Server 3
+                </ServerOption>
+                <ServerOption
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => handleServerSelect('vidbinge')}
+                  disabled={isLoadingServerOptions}
+                >
+                  <FaFilm color="#e50914" /> Server 4
+                </ServerOption>
+                <ServerOption
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => handleServerSelect('vembed')}
+                  disabled={isLoadingServerOptions}
+                >
+                  <FaFilm color="#e50914" /> Server 5
                 </ServerOption>
               </ServerOptions>
             </Modal>
