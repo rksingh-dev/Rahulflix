@@ -1,0 +1,14 @@
+const { createProxyMiddleware } = require('http-proxy-middleware');
+
+module.exports = function(app) {
+  app.use(
+    '/tmdb-proxy',
+    createProxyMiddleware({
+      target: 'https://api.themoviedb.org/3',
+      changeOrigin: true,
+      pathRewrite: {
+        '^/tmdb-proxy': '', // remove base path
+      },
+    })
+  );
+};
