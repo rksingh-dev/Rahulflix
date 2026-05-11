@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -19,6 +20,7 @@ const Nav = styled(motion.nav).withConfig({
   align-items: center;
   justify-content: space-between;
   transition: all 0.3s ease;
+  overflow: visible;
   background: ${({ scrolled }) =>
     scrolled ? 'rgba(0, 0, 0, 0.95)' : 'linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%)'};
   backdrop-filter: ${({ scrolled }) => (scrolled ? 'blur(10px)' : 'none')};
@@ -201,11 +203,17 @@ const Overlay = styled(motion.div)`
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.75);
+  margin: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10020;
+  z-index: 999999;
+  padding: 2rem;
+  box-sizing: border-box;
+  overflow: hidden;
+  will-change: transform;
 `;
 
 const Modal = styled(motion.div)`
@@ -215,6 +223,8 @@ const Modal = styled(motion.div)`
   width: 100%;
   max-width: 380px;
   padding: 1.5rem;
+  z-index: 1000000;
+  will-change: transform;
 `;
 
 const ModalTitle = styled.h3`
@@ -446,8 +456,8 @@ const Navbar: React.FC = () => {
         <FaUser size={16} />
       </UserAvatar>
 
-      <AnimatePresence>
-        {showServerSelection && pendingResult && (
+      {showServerSelection && pendingResult && createPortal(
+        <AnimatePresence>
           <Overlay
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -508,8 +518,9 @@ const Navbar: React.FC = () => {
               </ServerOptions>
             </Modal>
           </Overlay>
-        )}
-      </AnimatePresence>
+        </AnimatePresence>,
+        document.body
+      )}
     </Nav>
   );
 };

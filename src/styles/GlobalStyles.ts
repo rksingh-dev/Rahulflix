@@ -94,4 +94,12 @@ export const GlobalStyles = createGlobalStyle`
       transform: translateX(0);
     }
   }
+
+  .sc-cPiKLX.evMbLU {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    z-index: 999999 !important;
+  }
 `;
