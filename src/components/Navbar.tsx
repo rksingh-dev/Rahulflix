@@ -484,7 +484,7 @@ const Navbar: React.FC = () => {
                   onClick={() => handleServerSelect('111movies')}
                   disabled={isLoadingServerOptions}
                 >
-                  <FaPlay color="#e50914" /> Server 1
+                  <FaPlay color="#e50914" /> SERVER 1 (MOVIE + TV SERIES)
                 </ServerOption>
                 <ServerOption
                   whileHover={{ scale: 1.01 }}
@@ -492,7 +492,7 @@ const Navbar: React.FC = () => {
                   onClick={() => handleServerSelect('rivestream')}
                   disabled={isLoadingServerOptions}
                 >
-                  <FaTv color="#e50914" /> Server 2
+                  <FaTv color="#e50914" /> SERVER 2 (MOVIE)
                 </ServerOption>
                 <ServerOption
                   whileHover={{ scale: 1.01 }}
@@ -500,7 +500,7 @@ const Navbar: React.FC = () => {
                   onClick={() => handleServerSelect('streamingnow')}
                   disabled={isLoadingServerOptions}
                 >
-                  <FaFilm color="#e50914" /> Server 3
+                  <FaFilm color="#e50914" /> SERVER 3 (MOVIE)
                 </ServerOption>
                 <ServerOption
                   whileHover={{ scale: 1.01 }}
@@ -508,7 +508,7 @@ const Navbar: React.FC = () => {
                   onClick={() => handleServerSelect('vidbinge')}
                   disabled={isLoadingServerOptions}
                 >
-                  <FaFilm color="#e50914" /> Server 4
+                  <FaFilm color="#e50914" /> SERVER 4 (MOVIE)
                 </ServerOption>
                 <ServerOption
                   whileHover={{ scale: 1.01 }}
@@ -516,7 +516,7 @@ const Navbar: React.FC = () => {
                   onClick={() => handleServerSelect('vembed')}
                   disabled={isLoadingServerOptions}
                 >
-                  <FaFilm color="#e50914" /> Server 5
+                  <FaFilm color="#e50914" /> SERVER 5 (MOVIE)
                 </ServerOption>
                 <ServerOption
                   whileHover={{ scale: 1.01 }}

@@ -394,35 +394,35 @@ const Home: React.FC = () => {
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleServerSelect("111movies")}
                 >
-                  <FaPlay color="#e50914" /> Server 1
+                  <FaPlay color="#e50914" /> SERVER 1 (MOVIE + TV SERIES)
                 </ServerOption>
                 <ServerOption
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleServerSelect("rivestream")}
                 >
-                  <FaTv color="#e50914" /> Server 2
+                  <FaTv color="#e50914" /> SERVER 2 (MOVIE)
                 </ServerOption>
                 <ServerOption
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleServerSelect("streamingnow")}
                 >
-                  <FaFilm color="#e50914" /> Server 3
+                  <FaFilm color="#e50914" /> SERVER 3 (MOVIE)
                 </ServerOption>
                 <ServerOption
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleServerSelect("vidbinge")}
                 >
-                  <FaFilm color="#e50914" /> Server 4
+                  <FaFilm color="#e50914" /> SERVER 4 (MOVIE)
                 </ServerOption>
                 <ServerOption
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleServerSelect("vembed")}
                 >
-                  <FaFilm color="#e50914" /> Server 5
+                  <FaFilm color="#e50914" /> SERVER 5 (MOVIE)
                 </ServerOption>
                 <ServerOption
                   whileHover={{ scale: 1.02 }}
