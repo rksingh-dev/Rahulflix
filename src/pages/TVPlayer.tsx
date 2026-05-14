@@ -217,6 +217,7 @@ const TVPlayer: React.FC = () => {
     if (server === 'rivestream') return '111movies';
     if (server === 'vidbinge') return '111movies';
     if (server === 'vembed') return '111movies';
+    if (server === 'rivestreamembed') return '111movies';
     return null;
   };
 

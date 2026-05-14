@@ -366,7 +366,7 @@ const Navbar: React.FC = () => {
         ? getStreamUrl(pendingImdbId, 'movie', undefined, undefined, server)
         : getStreamUrl(pendingImdbId, 'tv', 1, 1, server);
 
-    if (server === 'rivestream') {
+    if (server === 'rivestream' || server === 'rivestreamembed') {
       window.open(streamUrl, '_blank', 'noopener,noreferrer');
     } else {
       if (pendingResult.media_type === 'movie') {
@@ -514,6 +514,14 @@ const Navbar: React.FC = () => {
                   disabled={isLoadingServerOptions}
                 >
                   <FaFilm color="#e50914" /> Server 5
+                </ServerOption>
+                <ServerOption
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => handleServerSelect('rivestreamembed')}
+                  disabled={isLoadingServerOptions}
+                >
+                  <FaTv color="#e50914" /> Server 6 (TV SERIES)
                 </ServerOption>
               </ServerOptions>
             </Modal>
