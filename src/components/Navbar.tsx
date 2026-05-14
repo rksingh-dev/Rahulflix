@@ -361,18 +361,21 @@ const Navbar: React.FC = () => {
   const handleServerSelect = (server: ServerType) => {
     if (!pendingResult || !pendingImdbId) return;
 
+    // Use TMDB ID for Server 6 (rivestreamembed), otherwise use IMDb ID
+    const idForServer = server === 'rivestreamembed' ? pendingResult.id.toString() : pendingImdbId;
     const streamUrl =
       pendingResult.media_type === 'movie'
-        ? getStreamUrl(pendingImdbId, 'movie', undefined, undefined, server)
-        : getStreamUrl(pendingImdbId, 'tv', 1, 1, server);
+        ? getStreamUrl(idForServer, 'movie', undefined, undefined, server)
+        : getStreamUrl(idForServer, 'tv', 1, 1, server);
 
     if (server === 'rivestream') {
       window.open(streamUrl, '_blank', 'noopener,noreferrer');
     } else {
+      const navigateId = server === 'rivestreamembed' ? pendingResult.id.toString() : pendingImdbId;
       if (pendingResult.media_type === 'movie') {
-        navigate(`/watch/${pendingImdbId}`, { state: { server } });
+        navigate(`/watch/${navigateId}`, { state: { server } });
       } else {
-        navigate(`/tv/${pendingImdbId}/watch/1/1`, { state: { server } });
+        navigate(`/tv/${navigateId}/watch/1/1`, { state: { server } });
       }
     }
 

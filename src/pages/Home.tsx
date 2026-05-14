@@ -293,19 +293,21 @@ const Home: React.FC = () => {
         return;
       }
 
+      // Use TMDB ID for Server 6 (rivestreamembed), otherwise use IMDb ID
+      const idForServer = server === 'rivestreamembed' ? selectedMovie.id.toString() : imdbId;
       const streamUrl =
         selectedMovie.type === "movie"
-          ? getStreamUrl(imdbId, "movie", undefined, undefined, server)
-          : getStreamUrl(imdbId, "tv", 1, 1, server);
+          ? getStreamUrl(idForServer, "movie", undefined, undefined, server)
+          : getStreamUrl(idForServer, "tv", 1, 1, server);
 
       if (server === "rivestream") {
         window.open(streamUrl, "_blank", "noopener,noreferrer");
       } else {
-        const cleanImdbId = imdbId.replace(/^tt/, "");
+        const navigateId = server === 'rivestreamembed' ? selectedMovie.id.toString() : imdbId.replace(/^tt/, "");
         if (selectedMovie.type === "movie") {
-          navigate(`/watch/${cleanImdbId}`, { state: { server } });
+          navigate(`/watch/${navigateId}`, { state: { server } });
         } else {
-          navigate(`/tv/${cleanImdbId}/watch/1/1`, { state: { server } });
+          navigate(`/tv/${navigateId}/watch/1/1`, { state: { server } });
         }
       }
       setShowServerSelection(false);
