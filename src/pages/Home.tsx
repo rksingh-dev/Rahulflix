@@ -298,7 +298,7 @@ const Home: React.FC = () => {
           ? getStreamUrl(imdbId, "movie", undefined, undefined, server)
           : getStreamUrl(imdbId, "tv", 1, 1, server);
 
-      if (server === "rivestream" || server === "rivestreamembed") {
+      if (server === "rivestream") {
         window.open(streamUrl, "_blank", "noopener,noreferrer");
       } else {
         const cleanImdbId = imdbId.replace(/^tt/, "");

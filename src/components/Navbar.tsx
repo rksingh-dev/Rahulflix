@@ -366,7 +366,7 @@ const Navbar: React.FC = () => {
         ? getStreamUrl(pendingImdbId, 'movie', undefined, undefined, server)
         : getStreamUrl(pendingImdbId, 'tv', 1, 1, server);
 
-    if (server === 'rivestream' || server === 'rivestreamembed') {
+    if (server === 'rivestream') {
       window.open(streamUrl, '_blank', 'noopener,noreferrer');
     } else {
       if (pendingResult.media_type === 'movie') {
