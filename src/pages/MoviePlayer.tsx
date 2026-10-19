@@ -209,7 +209,7 @@ const MoviePlayer: React.FC = () => {
   useEffect(() => {
     if (!streamUrl) return;
 
-    const timeoutMs = activeServer === 'streamingnow' ? 2500 : 12000;
+    const timeoutMs = 12000;
     const timer = setTimeout(() => {
       if (!frameLoaded) {
         handleFrameFailure();

@@ -484,7 +484,7 @@ const Navbar: React.FC = () => {
                   onClick={() => handleServerSelect('111movies')}
                   disabled={isLoadingServerOptions}
                 >
-                  <FaPlay color="#e50914" /> SERVER 1 (MOVIE + TV SERIES)
+                  <FaPlay color="#e50914" /> SERVER 1 (111movies - Movie & TV)
                 </ServerOption>
                 <ServerOption
                   whileHover={{ scale: 1.01 }}
@@ -492,7 +492,7 @@ const Navbar: React.FC = () => {
                   onClick={() => handleServerSelect('rivestream')}
                   disabled={isLoadingServerOptions}
                 >
-                  <FaTv color="#e50914" /> SERVER 2 (MOVIE)
+                  <FaTv color="#e50914" /> SERVER 2 (MultiEmbed - New Tab)
                 </ServerOption>
                 <ServerOption
                   whileHover={{ scale: 1.01 }}
@@ -500,7 +500,7 @@ const Navbar: React.FC = () => {
                   onClick={() => handleServerSelect('streamingnow')}
                   disabled={isLoadingServerOptions}
                 >
-                  <FaFilm color="#e50914" /> SERVER 3 (MOVIE)
+                  <FaFilm color="#e50914" /> SERVER 3 (VidSrc SU - Movie & TV)
                 </ServerOption>
                 <ServerOption
                   whileHover={{ scale: 1.01 }}
@@ -508,7 +508,7 @@ const Navbar: React.FC = () => {
                   onClick={() => handleServerSelect('vidbinge')}
                   disabled={isLoadingServerOptions}
                 >
-                  <FaFilm color="#e50914" /> SERVER 4 (MOVIE)
+                  <FaFilm color="#e50914" /> SERVER 4 (VidSrc PM - Movie & TV)
                 </ServerOption>
                 <ServerOption
                   whileHover={{ scale: 1.01 }}
@@ -516,7 +516,7 @@ const Navbar: React.FC = () => {
                   onClick={() => handleServerSelect('vembed')}
                   disabled={isLoadingServerOptions}
                 >
-                  <FaFilm color="#e50914" /> SERVER 5 (MOVIE)
+                  <FaFilm color="#e50914" /> SERVER 5 (AutoEmbed - Movie & TV)
                 </ServerOption>
                 <ServerOption
                   whileHover={{ scale: 1.01 }}
@@ -524,7 +524,7 @@ const Navbar: React.FC = () => {
                   onClick={() => handleServerSelect('rivestreamembed')}
                   disabled={isLoadingServerOptions}
                 >
-                  <FaTv color="#e50914" /> Server 6 (TV SERIES)
+                  <FaTv color="#e50914" /> SERVER 6 (2Embed - Movie & TV)
                 </ServerOption>
               </ServerOptions>
             </Modal>
