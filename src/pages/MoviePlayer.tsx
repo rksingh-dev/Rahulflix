@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { FaArrowLeft } from 'react-icons/fa';
 import { getStreamUrl, ServerType, serverManager } from '../services/api';
 import { injectAdBlocker } from '../utils/adBlocker';
+import AdBlockTip from '../components/AdBlockTip';
 
 const PlayerContainer = styled.div`
   min-height: 100vh;
@@ -32,6 +33,13 @@ const BackButton = styled(Link)`
   &:hover {
     color: #e50914;
   }
+`;
+
+const TopRightControls = styled.div`
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  z-index: 1000;
 `;
 
 const VideoContainer = styled.div`
@@ -279,6 +287,10 @@ const MoviePlayer: React.FC = () => {
         <FaArrowLeft size={16} />
         Back to Search
       </BackButton>
+
+      <TopRightControls>
+        <AdBlockTip variant="player" />
+      </TopRightControls>
 
       <VideoContainer>
         {activeServer === 'rivestream' ? (

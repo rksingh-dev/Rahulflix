@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaUser, FaSearch, FaPlay, FaTv, FaFilm } from 'react-icons/fa';
 import { TMDB_API_KEY, TMDB_BASE_URL, TMDB_IMAGE_BASE_URL, ServerType, getStreamUrl, serverManager } from '../services/api';
+import AdBlockTip from './AdBlockTip';
 
 const Nav = styled(motion.nav).withConfig({
   shouldForwardProp: (prop: PropertyKey) => prop !== 'scrolled',
@@ -177,6 +178,13 @@ const NoResults = styled.div`
   text-align: center;
   color: #999;
   font-size: 0.9rem;
+`;
+
+const NavRight = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-left: 0.5rem;
 `;
 
 const UserAvatar = styled.a`
@@ -455,9 +463,12 @@ const Navbar: React.FC = () => {
         </SearchContainer>
       </NavCenter>
 
-      <UserAvatar href="https://www.linkedin.com/in/rahul-kumar-singh-1a14401ba/" target="_blank" rel="noopener noreferrer">
-        <FaUser size={16} />
-      </UserAvatar>
+      <NavRight>
+        <AdBlockTip variant="navbar" />
+        <UserAvatar href="https://www.linkedin.com/in/rahul-kumar-singh-1a14401ba/" target="_blank" rel="noopener noreferrer">
+          <FaUser size={16} />
+        </UserAvatar>
+      </NavRight>
 
       {showServerSelection && pendingResult && createPortal(
         <AnimatePresence>

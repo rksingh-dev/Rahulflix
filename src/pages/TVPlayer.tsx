@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { FaArrowLeft, FaChevronLeft, FaChevronRight, FaTv } from 'react-icons/fa';
 import { getStreamUrl, ServerType, serverManager } from '../services/api';
 import { injectAdBlocker } from '../utils/adBlocker';
+import AdBlockTip from '../components/AdBlockTip';
 
 const PlayerContainer = styled.div`
   min-height: 100vh;
@@ -358,6 +359,7 @@ const TVPlayer: React.FC = () => {
       </BackButton>
 
       <EpisodeControls>
+        <AdBlockTip variant="player" />
         <EpisodeButton
           onClick={handlePreviousEpisode}
           disabled={!canGoPrevious()}
