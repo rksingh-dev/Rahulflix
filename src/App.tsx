@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Routes, Route, useLocation, BrowserRouter } from 'react-router-dom';
 import styled from 'styled-components';
 import Navbar from './components/Navbar';
@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import MoviePlayer from './pages/MoviePlayer';
 import TVPlayer from './pages/TVPlayer';
 import { GlobalStyles } from './styles/GlobalStyles';
+import { serverManager } from './services/api';
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -15,6 +16,12 @@ const AppContainer = styled.div`
 
 function AppContent() {
   const location = useLocation();
+
+  useEffect(() => {
+    // Automatically fetch updated server URLs from remote config on startup
+    serverManager.init();
+  }, []);
+
   const hideNavbar = location.pathname.startsWith('/watch/') ||
                      (location.pathname.includes('/tv/') && location.pathname.includes('/watch/'));
 

@@ -1,0 +1,85 @@
+{
+  "version": 2,
+  "updatedAt": "2026-10-21T14:18:22.508Z",
+  "servers": [
+    {
+      "id": "111movies",
+      "label": "SERVER 1 (Recommended)",
+      "activeDomain": "https://111movies.net",
+      "domains": [
+        "https://111movies.net",
+        "https://111movies.com"
+      ],
+      "moviePattern": "{domain}/movie/{id}",
+      "tvPattern": "{domain}/tv/{id}/{season}/{episode}",
+      "requiresTt": false
+    },
+    {
+      "id": "rivestream",
+      "label": "SERVER 2 (Fast Stream)",
+      "activeDomain": "https://superembed.stream",
+      "domains": [
+        "https://multiembed.mov",
+        "https://superembed.stream"
+      ],
+      "moviePattern": "{domain}/?video_id={id}",
+      "tvPattern": "{domain}/?video_id={id}&season={season}&episode={episode}",
+      "requiresTt": true,
+      "openInNewTab": true
+    },
+    {
+      "id": "streamingnow",
+      "label": "SERVER 3 (HD Quality)",
+      "activeDomain": "https://vidsrc.su",
+      "domains": [
+        "https://vidsrc.su",
+        "https://vidsrc.pm",
+        "https://vidsrc.cc",
+        "https://vidsrc.to",
+        "https://vidsrc.xyz",
+        "https://vidsrc.me"
+      ],
+      "moviePattern": "{domain}/embed/movie/{id}",
+      "tvPattern": "{domain}/embed/tv/{id}/{season}/{episode}",
+      "requiresTt": true
+    },
+    {
+      "id": "vidbinge",
+      "label": "SERVER 4 (Multi-Source)",
+      "activeDomain": "https://vidsrc.pm",
+      "domains": [
+        "https://vidsrc.pm",
+        "https://vidsrc.su",
+        "https://vidsrc.vip"
+      ],
+      "moviePattern": "{domain}/embed/movie/{id}",
+      "tvPattern": "{domain}/embed/tv/{id}/{season}/{episode}",
+      "requiresTt": true
+    },
+    {
+      "id": "vembed",
+      "label": "SERVER 5 (Ultra Fast)",
+      "activeDomain": "https://autoembed.co",
+      "domains": [
+        "https://autoembed.co",
+        "https://player.autoembed.cc"
+      ],
+      "moviePattern": "{domain}/movie/imdb/{id}",
+      "tvPattern": "{domain}/tv/imdb/{id}-{season}-{episode}",
+      "requiresTt": true
+    },
+    {
+      "id": "rivestreamembed",
+      "label": "SERVER 6 (Backup Stream)",
+      "activeDomain": "https://www.2embed.cc",
+      "domains": [
+        "https://www.2embed.cc",
+        "https://www.2embed.to",
+        "https://www.2embed.skin"
+      ],
+      "moviePattern": "{domain}/embed/{id}",
+      "tvPattern": "{domain}/embedtv/{id}&s={season}&e={episode}",
+      "requiresTt": true
+    }
+  ]
+}

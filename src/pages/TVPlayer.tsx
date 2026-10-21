@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { FaArrowLeft, FaChevronLeft, FaChevronRight, FaTv } from 'react-icons/fa';
-import { getStreamUrl, ServerType } from '../services/api';
+import { getStreamUrl, ServerType, serverManager } from '../services/api';
 import { injectAdBlocker } from '../utils/adBlocker';
 
 const PlayerContainer = styled.div`
@@ -212,25 +212,26 @@ const TVPlayer: React.FC = () => {
   const seasonNum = parseInt(season || '1');
   const episodeNum = parseInt(episode || '1');
 
-  const getFallbackServer = (server: ServerType): ServerType | null => {
-    if (server === 'streamingnow') return '111movies';
-    if (server === 'rivestream') return '111movies';
-    if (server === 'vidbinge') return '111movies';
-    if (server === 'vembed') return '111movies';
-    if (server === 'rivestreamembed') return '111movies';
-    return null;
-  };
-
   const handleFrameFailure = useCallback(() => {
-    const nextServer = getFallbackServer(activeServer);
-    if (nextServer) {
-      setFallbackNote(`Server blocked (${activeServer}), switched to ${nextServer}.`);
+    // 1. Try alternative mirror domain for current server
+    const mirror = serverManager.tryNextMirror(activeServer);
+    if (mirror && id) {
+      setFallbackNote('Optimizing stream connection...');
+      const updatedUrl = getStreamUrl(id, 'tv', seasonNum, episodeNum, activeServer);
+      setStreamUrl(updatedUrl);
+      return;
+    }
+
+    // 2. Rotate to next backup server in chain
+    const nextServer = serverManager.getNextFallbackServer(activeServer);
+    if (nextServer && nextServer !== activeServer) {
+      setFallbackNote('Stream source busy, switching to backup server...');
       setActiveServer(nextServer);
       return;
     }
 
     setError('This stream server refused to load in an iframe. Please try another title or server.');
-  }, [activeServer]);
+  }, [activeServer, id, seasonNum, episodeNum]);
 
   useEffect(() => {
     setActiveServer(requestedServer);

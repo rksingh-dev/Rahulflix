@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaPlay, FaTv, FaStar, FaFilm } from "react-icons/fa";
-import { TMDB_API_KEY, TMDB_BASE_URL, TMDB_IMAGE_BASE_URL, ServerType, getStreamUrl } from "../services/api";
+import { TMDB_API_KEY, TMDB_BASE_URL, TMDB_IMAGE_BASE_URL, ServerType, getStreamUrl, serverManager } from "../services/api";
 
 const MainContainer = styled.div`
   min-height: 100vh;
@@ -389,48 +389,23 @@ const Home: React.FC = () => {
             >
               <ModalTitle>Choose Server</ModalTitle>
               <ServerOptions>
-                <ServerOption
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => handleServerSelect("111movies")}
-                >
-                  <FaPlay color="#e50914" /> SERVER 1 (111movies - Movie & TV)
-                </ServerOption>
-                <ServerOption
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => handleServerSelect("rivestream")}
-                >
-                  <FaTv color="#e50914" /> SERVER 2 (MultiEmbed - New Tab)
-                </ServerOption>
-                <ServerOption
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => handleServerSelect("streamingnow")}
-                >
-                  <FaFilm color="#e50914" /> SERVER 3 (VidSrc SU - Movie & TV)
-                </ServerOption>
-                <ServerOption
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => handleServerSelect("vidbinge")}
-                >
-                  <FaFilm color="#e50914" /> SERVER 4 (VidSrc PM - Movie & TV)
-                </ServerOption>
-                <ServerOption
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => handleServerSelect("vembed")}
-                >
-                  <FaFilm color="#e50914" /> SERVER 5 (AutoEmbed - Movie & TV)
-                </ServerOption>
-                <ServerOption
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => handleServerSelect("rivestreamembed")}
-                >
-                  <FaTv color="#e50914" /> SERVER 6 (2Embed - Movie & TV)
-                </ServerOption>
+                {serverManager.getServerList().map((srv, idx) => (
+                  <ServerOption
+                    key={srv.id}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handleServerSelect(srv.id)}
+                  >
+                    {idx === 0 ? (
+                      <FaPlay color="#e50914" />
+                    ) : idx === 1 ? (
+                      <FaTv color="#e50914" />
+                    ) : (
+                      <FaFilm color="#e50914" />
+                    )}
+                    {srv.label}
+                  </ServerOption>
+                ))}
               </ServerOptions>
               
               <button

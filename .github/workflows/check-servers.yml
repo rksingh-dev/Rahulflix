@@ -1,0 +1,37 @@
+name: Check & Auto-Update Streaming Servers
+
+on:
+  schedule:
+    # Run twice daily at 00:00 and 12:00 UTC
+    - cron: '0 0,12 * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+jobs:
+  check-and-update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Run health check & probe mirrors
+        run: node scripts/check-servers.js
+
+      - name: Commit & push updated servers.json if changed
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          if [ -n "$(git status --porcelain public/servers.json)" ]; then
+            git add public/servers.json
+            git commit -m "chore: auto-update streaming server domains [skip ci]"
+            git push
+          else
+            echo "No domain updates needed."
+          fi
