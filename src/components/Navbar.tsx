@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaUser, FaSearch, FaPlay, FaTv, FaFilm } from 'react-icons/fa';
-import { TMDB_API_KEY, TMDB_BASE_URL, TMDB_IMAGE_BASE_URL, ServerType, getStreamUrl, serverManager } from '../services/api';
+import { FaUser, FaSearch } from 'react-icons/fa';
+import { TMDB_API_KEY, TMDB_BASE_URL, TMDB_IMAGE_BASE_URL } from '../services/api';
 import AdBlockTip from './AdBlockTip';
 
 const Nav = styled(motion.nav).withConfig({
@@ -205,72 +204,6 @@ const UserAvatar = styled.a`
   }
 `;
 
-const Overlay = styled(motion.div)`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  margin: 0;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999999;
-  padding: 2rem;
-  box-sizing: border-box;
-  overflow: hidden;
-  will-change: transform;
-`;
-
-const Modal = styled(motion.div)`
-  background: #181818;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 14px;
-  width: 100%;
-  max-width: 380px;
-  padding: 1.5rem;
-  z-index: 1000000;
-  will-change: transform;
-`;
-
-const ModalTitle = styled.h3`
-  margin: 0;
-  color: #fff;
-  font-size: 1.2rem;
-`;
-
-const ModalSubText = styled.p`
-  margin: 0.5rem 0 1rem 0;
-  color: #b3b3b3;
-  font-size: 0.9rem;
-`;
-
-const ServerOptions = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-`;
-
-const ServerOption = styled(motion.button)`
-  width: 100%;
-  padding: 0.9rem 1rem;
-  background: #232323;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 10px;
-  color: #fff;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-
-  &:hover {
-    background: #2d2d2d;
-  }
-`;
-
 interface SearchResult {
   id: number;
   title?: string;
@@ -288,10 +221,6 @@ const Navbar: React.FC = () => {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [showResults, setShowResults] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
-  const [showServerSelection, setShowServerSelection] = useState(false);
-  const [pendingResult, setPendingResult] = useState<SearchResult | null>(null);
-  const [pendingImdbId, setPendingImdbId] = useState<string | null>(null);
-  const [isLoadingServerOptions, setIsLoadingServerOptions] = useState(false);
   const searchTimeoutRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
@@ -340,58 +269,12 @@ const Navbar: React.FC = () => {
     }, 300);
   };
 
-  const handleResultClick = async (result: SearchResult) => {
-    try {
-      setIsLoadingServerOptions(true);
-      const response = await fetch(
-        `${TMDB_BASE_URL}/${result.media_type}/${result.id}/external_ids?api_key=${TMDB_API_KEY}`
-      );
-      const data = await response.json();
-      const imdbId = data.imdb_id;
-
-      if (!imdbId) {
-        alert('Stream not found for this content.');
-        return;
-      }
-
-      setPendingImdbId(imdbId.replace(/^tt/, ''));
-      setPendingResult(result);
-      setShowServerSelection(true);
-      setShowResults(false);
-    } catch (err) {
-      console.error(err);
-      alert('Error loading stream.');
-    } finally {
-      setIsLoadingServerOptions(false);
-    }
-  };
-
-  const handleServerSelect = (server: ServerType) => {
-    if (!pendingResult || !pendingImdbId) return;
-
-    // Use TMDB ID for Server 6 (rivestreamembed), otherwise use IMDb ID
-    const idForServer = server === 'rivestreamembed' ? pendingResult.id.toString() : pendingImdbId;
-    const streamUrl =
-      pendingResult.media_type === 'movie'
-        ? getStreamUrl(idForServer, 'movie', undefined, undefined, server)
-        : getStreamUrl(idForServer, 'tv', 1, 1, server);
-
-    if (server === 'rivestream') {
-      window.open(streamUrl, '_blank', 'noopener,noreferrer');
-    } else {
-      const navigateId = server === 'rivestreamembed' ? pendingResult.id.toString() : pendingImdbId;
-      if (pendingResult.media_type === 'movie') {
-        navigate(`/watch/${navigateId}`, { state: { server } });
-      } else {
-        navigate(`/tv/${navigateId}/watch/1/1`, { state: { server } });
-      }
-    }
-
+  const handleResultClick = (result: SearchResult) => {
+    setShowResults(false);
     setSearchQuery('');
-    setSearchResults([]);
-    setPendingResult(null);
-    setPendingImdbId(null);
-    setShowServerSelection(false);
+    navigate(`/?movie=${result.id}&type=${result.media_type}`, {
+      state: { movieTitle: result.title || result.name }
+    });
   };
 
   return (
@@ -469,50 +352,6 @@ const Navbar: React.FC = () => {
           <FaUser size={16} />
         </UserAvatar>
       </NavRight>
-
-      {showServerSelection && pendingResult && createPortal(
-        <AnimatePresence>
-          <Overlay
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setShowServerSelection(false)}
-          >
-            <Modal
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <ModalTitle>Choose Server</ModalTitle>
-              <ModalSubText>
-                {pendingResult.title || pendingResult.name}
-              </ModalSubText>
-              <ServerOptions>
-                {serverManager.getServerList().map((srv, idx) => (
-                  <ServerOption
-                    key={srv.id}
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => handleServerSelect(srv.id)}
-                    disabled={isLoadingServerOptions}
-                  >
-                    {idx === 0 ? (
-                      <FaPlay color="#e50914" />
-                    ) : idx === 1 ? (
-                      <FaTv color="#e50914" />
-                    ) : (
-                      <FaFilm color="#e50914" />
-                    )}
-                    {srv.label}
-                  </ServerOption>
-                ))}
-              </ServerOptions>
-            </Modal>
-          </Overlay>
-        </AnimatePresence>,
-        document.body
-      )}
     </Nav>
   );
 };

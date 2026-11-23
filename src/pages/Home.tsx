@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaPlay, FaTv, FaStar, FaFilm } from "react-icons/fa";
@@ -207,6 +207,13 @@ const ModalTitle = styled.h2`
   color: #fff;
 `;
 
+const ModalSubText = styled.p`
+  margin: -1.25rem 0 1.75rem 0;
+  color: #b3b3b3;
+  font-size: 1.05rem;
+  font-weight: 500;
+`;
+
 const ServerOptions = styled.div`
   display: flex;
   flex-direction: column;
@@ -245,13 +252,22 @@ interface TMDBMovie {
   media_type?: "movie" | "tv";
 }
 
+interface SelectedMovieInfo {
+  id: number | string;
+  type: "movie" | "tv";
+  title?: string;
+  imdbId?: string;
+}
+
 const Home: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
   const [movies, setMovies] = useState<TMDBMovie[]>([]);
   const [trending, setTrending] = useState<TMDBMovie | null>(null);
   const [loading, setLoading] = useState(true);
   const [showServerSelection, setShowServerSelection] = useState(false);
-  const [selectedMovie, setSelectedMovie] = useState<{ id: number; type: "movie" | "tv" } | null>(null);
+  const [selectedMovie, setSelectedMovie] = useState<SelectedMovieInfo | null>(null);
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -273,28 +289,109 @@ const Home: React.FC = () => {
     fetchMovies();
   }, []);
 
-  const handleMovieClick = (id: number, type: "movie" | "tv") => {
-    setSelectedMovie({ id, type });
+  // Sync URL search params with server selection modal
+  useEffect(() => {
+    const movieParam = searchParams.get("movie");
+    const typeParam = (searchParams.get("type") as "movie" | "tv") || "movie";
+
+    if (movieParam) {
+      const numId = parseInt(movieParam, 10);
+      const isNumeric = !isNaN(numId) && /^\d+$/.test(movieParam);
+
+      const locState = location.state as { movieTitle?: string } | undefined;
+      const foundInList = movies.find(m => m.id === numId) || (trending?.id === numId ? trending : null);
+      const initialTitle =
+        locState?.movieTitle || (foundInList ? (foundInList.title || foundInList.name) : undefined);
+
+      setSelectedMovie({
+        id: isNumeric ? numId : movieParam,
+        type: typeParam,
+        title: initialTitle,
+      });
+      setShowServerSelection(true);
+
+      if (!initialTitle) {
+        if (isNumeric) {
+          fetch(`${TMDB_BASE_URL}/${typeParam}/${numId}?api_key=${TMDB_API_KEY}`)
+            .then(res => res.json())
+            .then(data => {
+              if (data && (data.title || data.name)) {
+                setSelectedMovie(prev =>
+                  prev && String(prev.id) === movieParam
+                    ? { ...prev, title: data.title || data.name }
+                    : prev
+                );
+              }
+            })
+            .catch(() => {});
+        } else if (movieParam.startsWith("tt")) {
+          fetch(`${TMDB_BASE_URL}/find/${movieParam}?api_key=${TMDB_API_KEY}&external_source=imdb_id`)
+            .then(res => res.json())
+            .then(data => {
+              const item =
+                (data.movie_results && data.movie_results[0]) ||
+                (data.tv_results && data.tv_results[0]);
+              if (item) {
+                setSelectedMovie(prev =>
+                  prev && String(prev.id) === movieParam
+                    ? { ...prev, title: item.title || item.name, id: item.id }
+                    : prev
+                );
+              }
+            })
+            .catch(() => {});
+        }
+      }
+    } else {
+      setShowServerSelection(false);
+      setSelectedMovie(null);
+    }
+  }, [searchParams, movies, trending, location.state]);
+
+  const handleMovieClick = (id: number | string, type: "movie" | "tv", title?: string) => {
+    setSelectedMovie({ id, type, title });
     setShowServerSelection(true);
+    setSearchParams({ movie: String(id), type });
+  };
+
+  const handleCloseModal = () => {
+    setShowServerSelection(false);
+    setSelectedMovie(null);
+    const newParams = new URLSearchParams(searchParams);
+    newParams.delete("movie");
+    newParams.delete("type");
+    setSearchParams(newParams, { replace: true });
   };
 
   const handleServerSelect = async (server: ServerType) => {
     if (!selectedMovie) return;
     
     try {
-      const response = await fetch(
-        `${TMDB_BASE_URL}/${selectedMovie.type}/${selectedMovie.id}/external_ids?api_key=${TMDB_API_KEY}`
-      );
-      const data = await response.json();
-      const imdbId = data.imdb_id;
+      let imdbId = selectedMovie.imdbId;
+      const tmdbId = typeof selectedMovie.id === "number" ? selectedMovie.id : undefined;
 
       if (!imdbId) {
+        if (typeof selectedMovie.id === "string" && selectedMovie.id.startsWith("tt")) {
+          imdbId = selectedMovie.id;
+        } else {
+          const response = await fetch(
+            `${TMDB_BASE_URL}/${selectedMovie.type}/${selectedMovie.id}/external_ids?api_key=${TMDB_API_KEY}`
+          );
+          const data = await response.json();
+          imdbId = data.imdb_id;
+        }
+      }
+
+      if (!imdbId && !tmdbId) {
         alert("Stream not found for this content.");
         return;
       }
 
-      // Use TMDB ID for Server 6 (rivestreamembed), otherwise use IMDb ID
-      const idForServer = server === 'rivestreamembed' ? selectedMovie.id.toString() : imdbId;
+      // Use TMDB ID for Server 6 (rivestreamembed) if available, otherwise IMDb ID
+      const idForServer = (server === "rivestreamembed" && tmdbId)
+        ? tmdbId.toString()
+        : (imdbId || String(selectedMovie.id));
+
       const streamUrl =
         selectedMovie.type === "movie"
           ? getStreamUrl(idForServer, "movie", undefined, undefined, server)
@@ -303,14 +400,24 @@ const Home: React.FC = () => {
       if (server === "rivestream") {
         window.open(streamUrl, "_blank", "noopener,noreferrer");
       } else {
-        const navigateId = server === 'rivestreamembed' ? selectedMovie.id.toString() : imdbId;
+        const navigateId = (server === "rivestreamembed" && tmdbId)
+          ? tmdbId.toString()
+          : (imdbId || String(selectedMovie.id));
+
+        const navState = {
+          server,
+          movieId: selectedMovie.id,
+          mediaType: selectedMovie.type,
+          movieTitle: selectedMovie.title,
+          imdbId
+        };
+
         if (selectedMovie.type === "movie") {
-          navigate(`/watch/${navigateId}`, { state: { server } });
+          navigate(`/watch/${navigateId}`, { state: navState });
         } else {
-          navigate(`/tv/${navigateId}/watch/1/1`, { state: { server } });
+          navigate(`/tv/${navigateId}/watch/1/1`, { state: navState });
         }
       }
-      setShowServerSelection(false);
     } catch (err) {
       console.error(err);
       alert("Error finding stream.");
@@ -340,7 +447,7 @@ const Home: React.FC = () => {
               <WatchButton
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => handleMovieClick(trending.id, trending.title ? "movie" : "tv")}
+                onClick={() => handleMovieClick(trending.id, trending.title ? "movie" : "tv", trending.title || trending.name)}
               >
                 <FaPlay size={14} /> Watch Now
               </WatchButton>
@@ -359,7 +466,7 @@ const Home: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
               whileHover={{ y: -10 }}
-              onClick={() => handleMovieClick(movie.id, movie.title ? "movie" : "tv")}
+              onClick={() => handleMovieClick(movie.id, movie.title ? "movie" : "tv", movie.title || movie.name)}
             >
               <Poster src={`${TMDB_IMAGE_BASE_URL}${movie.poster_path}`} alt={movie.title || movie.name} />
               <CardOverlay className="overlay">
@@ -379,7 +486,7 @@ const Home: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setShowServerSelection(false)}
+            onClick={handleCloseModal}
           >
             <Modal
               initial={{ scale: 0.9, opacity: 0 }}
@@ -388,6 +495,7 @@ const Home: React.FC = () => {
               onClick={e => e.stopPropagation()}
             >
               <ModalTitle>Choose Server</ModalTitle>
+              {selectedMovie?.title && <ModalSubText>{selectedMovie.title}</ModalSubText>}
               <ServerOptions>
                 {serverManager.getServerList().map((srv, idx) => (
                   <ServerOption
@@ -417,7 +525,7 @@ const Home: React.FC = () => {
                   cursor: "pointer",
                   fontSize: "0.9rem"
                 }}
-                onClick={() => setShowServerSelection(false)}
+                onClick={handleCloseModal}
               >
                 Cancel
               </button>

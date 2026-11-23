@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { FaArrowLeft, FaChevronLeft, FaChevronRight, FaTv } from 'react-icons/fa';
@@ -13,25 +13,27 @@ const PlayerContainer = styled.div`
   position: relative;
 `;
 
-const BackButton = styled(Link)`
+const BackButton = styled.button`
   position: absolute;
   top: 2rem;
   left: 2rem;
   color: #fff;
-  text-decoration: none;
+  background: rgba(0, 0, 0, 0.7);
+  border: none;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   font-size: 1.1rem;
   font-weight: 600;
-  transition: color 0.3s ease;
+  transition: color 0.3s ease, background 0.3s ease;
   z-index: 1000;
-  background: rgba(0, 0, 0, 0.7);
   padding: 0.5rem 1rem;
   border-radius: 4px;
+  cursor: pointer;
 
   &:hover {
     color: #e50914;
+    background: rgba(0, 0, 0, 0.9);
   }
 `;
 
@@ -199,7 +201,13 @@ const TVPlayer: React.FC = () => {
   }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const requestedServer = (location.state as { server: ServerType })?.server || '111movies';
+  const navState = location.state as {
+    server?: ServerType;
+    movieId?: number | string;
+    mediaType?: 'movie' | 'tv';
+    movieTitle?: string;
+  } | undefined;
+  const requestedServer = navState?.server || '111movies';
   const videoFrameRef = useRef<HTMLIFrameElement>(null);
 
   const [loading, setLoading] = useState(true);
@@ -212,6 +220,20 @@ const TVPlayer: React.FC = () => {
 
   const seasonNum = parseInt(season || '1');
   const episodeNum = parseInt(episode || '1');
+
+  const handleBack = () => {
+    if (navState?.movieId) {
+      navigate(`/?movie=${navState.movieId}&type=tv`, {
+        state: { movieTitle: navState.movieTitle }
+      });
+    } else if (window.history.length > 1) {
+      navigate(-1);
+    } else if (id) {
+      navigate(`/?movie=${id}&type=tv`);
+    } else {
+      navigate('/');
+    }
+  };
 
   const handleFrameFailure = useCallback(() => {
     // 1. Try alternative mirror domain for current server
@@ -293,16 +315,22 @@ const TVPlayer: React.FC = () => {
 
   const handlePreviousEpisode = () => {
     if (episodeNum > 1) {
-      navigate(`/tv/${id}/watch/${seasonNum}/${episodeNum - 1}`, { state: { server: activeServer } });
+      navigate(`/tv/${id}/watch/${seasonNum}/${episodeNum - 1}`, {
+        state: { ...location.state, server: activeServer }
+      });
     } else if (seasonNum > 1) {
       // Go to last episode of previous season (assuming 20 episodes max per season)
-      navigate(`/tv/${id}/watch/${seasonNum - 1}/20`, { state: { server: activeServer } });
+      navigate(`/tv/${id}/watch/${seasonNum - 1}/20`, {
+        state: { ...location.state, server: activeServer }
+      });
     }
   };
 
   const handleNextEpisode = () => {
     // Go to next episode (assuming unlimited episodes for simplicity)
-    navigate(`/tv/${id}/watch/${seasonNum}/${episodeNum + 1}`, { state: { server: activeServer } });
+    navigate(`/tv/${id}/watch/${seasonNum}/${episodeNum + 1}`, {
+      state: { ...location.state, server: activeServer }
+    });
   };
 
   const canGoPrevious = () => {
@@ -316,9 +344,9 @@ const TVPlayer: React.FC = () => {
   if (loading) {
     return (
       <PlayerContainer>
-        <BackButton to="/">
+        <BackButton onClick={handleBack} aria-label="Back">
           <FaArrowLeft size={16} />
-          Back to Search
+          Back
         </BackButton>
 
         <LoadingContainer>
@@ -335,15 +363,18 @@ const TVPlayer: React.FC = () => {
   if (error) {
     return (
       <PlayerContainer>
-        <BackButton to="/">
+        <BackButton onClick={handleBack} aria-label="Back">
           <FaArrowLeft size={16} />
-          Back to Search
+          Back
         </BackButton>
 
         <ErrorContainer>
           <ErrorTitle>Oops! Something went wrong</ErrorTitle>
           <ErrorMessage>{error}</ErrorMessage>
-          <RetryButton onClick={handleRetry}>Try Again</RetryButton>
+          <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <RetryButton onClick={handleBack}>Choose Another Server</RetryButton>
+            <RetryButton onClick={handleRetry} style={{ background: '#333' }}>Try Again</RetryButton>
+          </div>
         </ErrorContainer>
       </PlayerContainer>
     );
@@ -353,9 +384,9 @@ const TVPlayer: React.FC = () => {
 
   return (
     <PlayerContainer>
-      <BackButton to="/">
+      <BackButton onClick={handleBack} aria-label="Back">
         <FaArrowLeft size={16} />
-        Back to Search
+        Back
       </BackButton>
 
       <EpisodeControls>
@@ -416,7 +447,7 @@ const TVPlayer: React.FC = () => {
         <EpisodeInfo>
           <ShowTitle>
             <FaTv size={16} />
-            TV Show Player
+            {navState?.movieTitle || 'TV Show Player'}
           </ShowTitle>
           <EpisodeTitle>
             S{seasonNum}E{episodeNum}
