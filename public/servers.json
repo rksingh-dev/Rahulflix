@@ -1,6 +1,6 @@
 {
-  "version": 2,
-  "updatedAt": "2026-11-12T19:15:40.680Z",
+  "version": 3,
+  "updatedAt": "2026-11-23T19:00:00.000Z",
   "servers": [
     {
       "id": "111movies",
@@ -17,15 +17,15 @@
     {
       "id": "rivestream",
       "label": "SERVER 2 (Fast Stream)",
-      "activeDomain": "https://superembed.stream",
+      "activeDomain": "https://multiembed.mov",
       "domains": [
         "https://multiembed.mov",
         "https://superembed.stream"
       ],
       "moviePattern": "{domain}/?video_id={id}",
-      "tvPattern": "{domain}/?video_id={id}&season={season}&episode={episode}",
-      "requiresTt": true,
-      "openInNewTab": true
+      "tvPattern": "{domain}/?video_id={id}&s={season}&e={episode}",
+      "requiresTt": false,
+      "openInNewTab": false
     },
     {
       "id": "streamingnow",

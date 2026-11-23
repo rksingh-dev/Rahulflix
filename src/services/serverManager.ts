@@ -23,7 +23,7 @@ export interface ServersRegistry {
   servers: ServerDefinition[];
 }
 
-const STORAGE_KEY = 'rahulflix_server_registry_v2';
+const STORAGE_KEY = 'rahulflix_server_registry_v3';
 const REMOTE_CONFIG_URL =
   'https://raw.githubusercontent.com/rksingh-dev/Rahulflix/main/public/servers.json';
 const LOCAL_CONFIG_URL = '/servers.json';
@@ -44,9 +44,9 @@ const DEFAULT_SERVERS: ServerDefinition[] = [
     activeDomain: 'https://multiembed.mov',
     domains: ['https://multiembed.mov', 'https://superembed.stream'],
     moviePattern: '{domain}/?video_id={id}',
-    tvPattern: '{domain}/?video_id={id}&season={season}&episode={episode}',
-    requiresTt: true,
-    openInNewTab: true,
+    tvPattern: '{domain}/?video_id={id}&s={season}&e={episode}',
+    requiresTt: false,
+    openInNewTab: false,
   },
   {
     id: 'streamingnow',
@@ -245,6 +245,19 @@ class ServerManager {
     const finalSeason = season !== undefined ? season.toString() : '1';
     const finalEpisode = episode !== undefined ? episode.toString() : '1';
 
+    // Special handling for Server 2 (rivestream / multiembed)
+    // Matches: https://multiembed.mov/?video_id=tt... OR ?video_id=...&tmdb=1
+    // TV: &s=1&e=2
+    if (serverId === 'rivestream') {
+      const isImdb = id.startsWith('tt');
+      const tmdbParam = !isImdb ? '&tmdb=1' : '';
+      if (type === 'movie') {
+        return `${server.activeDomain}/?video_id=${id}${tmdbParam}`;
+      } else {
+        return `${server.activeDomain}/?video_id=${id}${tmdbParam}&s=${finalSeason}&e=${finalEpisode}`;
+      }
+    }
+
     return pattern
       .replace('{domain}', server.activeDomain)
       .replace('{id}', formattedId)
@@ -281,11 +294,11 @@ class ServerManager {
   public getNextFallbackServer(currentServer: ServerType): ServerType {
     const fallbackChain: ServerType[] = [
       '111movies',
+      'rivestream',
       'streamingnow',
       'vidbinge',
       'vembed',
       'rivestreamembed',
-      'rivestream',
     ];
 
     const idx = fallbackChain.indexOf(currentServer);

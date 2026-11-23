@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaPlay, FaTv, FaStar, FaFilm } from "react-icons/fa";
-import { TMDB_API_KEY, TMDB_BASE_URL, TMDB_IMAGE_BASE_URL, ServerType, getStreamUrl, serverManager } from "../services/api";
+import { TMDB_API_KEY, TMDB_BASE_URL, TMDB_IMAGE_BASE_URL, ServerType, serverManager } from "../services/api";
 
 const MainContainer = styled.div`
   min-height: 100vh;
@@ -388,35 +388,22 @@ const Home: React.FC = () => {
       }
 
       // Use TMDB ID for Server 6 (rivestreamembed) if available, otherwise IMDb ID
-      const idForServer = (server === "rivestreamembed" && tmdbId)
+      const navigateId = (server === "rivestreamembed" && tmdbId)
         ? tmdbId.toString()
         : (imdbId || String(selectedMovie.id));
 
-      const streamUrl =
-        selectedMovie.type === "movie"
-          ? getStreamUrl(idForServer, "movie", undefined, undefined, server)
-          : getStreamUrl(idForServer, "tv", 1, 1, server);
+      const navState = {
+        server,
+        movieId: selectedMovie.id,
+        mediaType: selectedMovie.type,
+        movieTitle: selectedMovie.title,
+        imdbId
+      };
 
-      if (server === "rivestream") {
-        window.open(streamUrl, "_blank", "noopener,noreferrer");
+      if (selectedMovie.type === "movie") {
+        navigate(`/watch/${navigateId}`, { state: navState });
       } else {
-        const navigateId = (server === "rivestreamembed" && tmdbId)
-          ? tmdbId.toString()
-          : (imdbId || String(selectedMovie.id));
-
-        const navState = {
-          server,
-          movieId: selectedMovie.id,
-          mediaType: selectedMovie.type,
-          movieTitle: selectedMovie.title,
-          imdbId
-        };
-
-        if (selectedMovie.type === "movie") {
-          navigate(`/watch/${navigateId}`, { state: navState });
-        } else {
-          navigate(`/tv/${navigateId}/watch/1/1`, { state: navState });
-        }
+        navigate(`/tv/${navigateId}/watch/1/1`, { state: navState });
       }
     } catch (err) {
       console.error(err);

@@ -240,6 +240,7 @@ const TVPlayer: React.FC = () => {
     const mirror = serverManager.tryNextMirror(activeServer);
     if (mirror && id) {
       setFallbackNote('Optimizing stream connection...');
+      setFrameLoaded(false);
       const updatedUrl = getStreamUrl(id, 'tv', seasonNum, episodeNum, activeServer);
       setStreamUrl(updatedUrl);
       return;
@@ -249,6 +250,7 @@ const TVPlayer: React.FC = () => {
     const nextServer = serverManager.getNextFallbackServer(activeServer);
     if (nextServer && nextServer !== activeServer) {
       setFallbackNote('Stream source busy, switching to backup server...');
+      setFrameLoaded(false);
       setActiveServer(nextServer);
       return;
     }
@@ -407,40 +409,21 @@ const TVPlayer: React.FC = () => {
       </EpisodeControls>
 
       <VideoContainer>
-        {activeServer === 'rivestream' ? (
-          <VideoFrame
-            key={`${activeServer}-${streamUrl}`}
-            ref={videoFrameRef}
-            src={streamUrl}
-            title={`TV Show: ${formattedId} - S${seasonNum}E${episodeNum}`}
-            allowFullScreen
-            sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-presentation"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            onError={handleFrameFailure}
-            onLoad={() => {
-              setFrameLoaded(true);
-              if (videoFrameRef.current) {
-                injectAdBlocker(videoFrameRef.current);
-              }
-            }}
-          />
-        ) : (
-          <VideoFrame
-            key={`${activeServer}-${streamUrl}`}
-            ref={videoFrameRef}
-            src={streamUrl}
-            title={`TV Show: ${formattedId} - S${seasonNum}E${episodeNum}`}
-            allowFullScreen
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            onError={handleFrameFailure}
-            onLoad={() => {
-              setFrameLoaded(true);
-              if (videoFrameRef.current) {
-                injectAdBlocker(videoFrameRef.current);
-              }
-            }}
-          />
-        )}
+        <VideoFrame
+          key={`${activeServer}-${streamUrl}`}
+          ref={videoFrameRef}
+          src={streamUrl}
+          title={`TV Show: ${formattedId} - S${seasonNum}E${episodeNum}`}
+          allowFullScreen
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          onError={handleFrameFailure}
+          onLoad={() => {
+            setFrameLoaded(true);
+            if (videoFrameRef.current) {
+              injectAdBlocker(videoFrameRef.current);
+            }
+          }}
+        />
       </VideoContainer>
 
       {showEpisodeInfo && (
