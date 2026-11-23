@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-21T14:18:22.508Z",
+  "updatedAt": "2026-11-12T19:15:40.680Z",
   "servers": [
     {
       "id": "111movies",
@@ -46,7 +46,7 @@
     {
       "id": "vidbinge",
       "label": "SERVER 4 (Multi-Source)",
-      "activeDomain": "https://vidsrc.pm",
+      "activeDomain": "https://vidsrc.su",
       "domains": [
         "https://vidsrc.pm",
         "https://vidsrc.su",
